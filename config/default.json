@@ -1,0 +1,42 @@
+{
+  "db": {
+    "host": "userdb_microservice",
+    "database": "users",
+    "username": "user",
+    "port": "5432",
+    "password": "password"
+  },
+  "logging": {
+    "level": "debug"
+  },
+  "errors": {
+    "userNotFound": {
+      "statusCode": 404,
+      "message": "No se pudo encontrar el usuario solicitado."
+    },
+    "driverNotFound": {
+      "statusCode": 404,
+      "message": "No se pudo encontrar el driver solicitado."
+    },
+    "userAlreadyExists": {
+      "statusCode": 403,
+      "message": "El usuario ya existe."
+    },
+    "missingCredentials": {
+      "statusCode": 401,
+      "message": "Todos los campos indicados con * son requeridos."
+    },
+    "wrongPassword": {
+      "statusCode": 402,
+      "message": "Email o contraseña erronea, intentar nuevamente."
+    },
+    "unableToMatchPasswords": {
+      "statusCode": 402,
+      "message": "Las contraseñas indicadas no coinciden, intentelo nuevamente."
+    },
+    "unableToMatchEmail": {
+      "statusCode": 402,
+      "message": "El email indicado no coincide con el email del usuario."
+    }
+  }
+}
