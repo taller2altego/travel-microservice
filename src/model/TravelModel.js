@@ -1,43 +1,25 @@
-const { Model, DataTypes } = require('sequelize');
+const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
 
-const sequelizeInstance = require('../sequelize').getSequelizeInstance();
-
-class User extends Model { }
-
-User.init({
-  id: {
-    type: DataTypes.INTEGER,
-    autoIncrement: true,
-    primaryKey: true
-  },
-  name: {
-    type: DataTypes.STRING,
-    allowNull: false
-  },
-  lastname: {
-    type: DataTypes.STRING,
-    allowNull: false
-  },
-  phoneNumber: {
-    type: DataTypes.INTEGER,
-    allowNull: false
-  },
-  email: {
-    type: DataTypes.STRING,
-    allowNull: false
-  },
-  password: {
-    type: DataTypes.STRING,
-    allowNull: false
+const TravelSchema = new Schema({
+  price: {
+    type: Number,
+    required: true
   }
-}, { tableName: 'user', timestamps: false, sequelize: getSequelizeInstance() });
+});
 
-/**
- * Function to retrive the sequelize instance.
- * It's being kept separate for testing purposes.
- */
-function getSequelizeInstance() {
-  return sequelizeInstance;
-}
+const TravelsSchema = new Schema({
+  userId: {
+    type: Number,
+    required: true
+  },
+  driverId: {
+    type: Number,
+    required: false,
+  },
+  travel: TravelSchema
+});
 
-module.exports = User;
+const Travels = mongoose.model('travels', TravelsSchema);
+
+module.exports = Travels;
