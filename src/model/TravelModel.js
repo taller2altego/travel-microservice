@@ -1,7 +1,15 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
-const TravelSchema = new Schema({
+const TravelsSchema = new Schema({
+  userId: {
+    type: Number,
+    required: true
+  },
+  driverId: {
+    type: Number,
+    required: false,
+  },
   price: {
     type: Number,
     required: true
@@ -15,23 +23,9 @@ const TravelSchema = new Schema({
     required: true
   },
   date: {
-    type: String,
+    type: Date,
     required: true
   }
-});
-
-//  date: "2022-08-01T03:01",
-
-const TravelsSchema = new Schema({
-  userId: {
-    type: Number,
-    required: true
-  },
-  driverId: {
-    type: Number,
-    required: false,
-  },
-  travel: TravelSchema
 });
 
 const Travels = mongoose.model('travels', TravelsSchema);

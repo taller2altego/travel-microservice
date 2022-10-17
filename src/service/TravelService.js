@@ -7,6 +7,9 @@ class TravelService {
     return TravelRepository.findTravelsByUserId(userId, query);
   }
 
+  createTravel(body) {
+    return TravelRepository.createTravel(body);
+  }
 
 }
 

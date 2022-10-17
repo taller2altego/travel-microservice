@@ -16,6 +16,11 @@ class TravelRepository {
 
     return { data: [...travels], limit, page, total: count };
   }
+
+  createTravel(body) {
+    const newUserTravel = new TravelModel(body);
+    return newUserTravel.save();
+  }
 }
 
 module.exports = new TravelRepository();
