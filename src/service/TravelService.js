@@ -12,12 +12,18 @@ class TravelService {
   }
 
   setDriverByTravelId(travelId, driverId) {
-    return TravelRepository.setDriverByTravelId(travelId, driverId);
+    return TravelRepository.patchTravel(travelId, { driverId });
+  }
+
+  updateDriverPosition(travelId, currentDriverPosition) {
+    return TravelRepository.patchTravel(travelId, { currentDriverPosition });
   }
 
   patchTravel(travelId, body) {
     if (body.driverId) {
       return this.setDriverByTravelId(travelId, body.driverId);
+    } else if (body.currentDriverPosition) {
+      return this.updateDriverPosition(travelId, body.currentDriverPosition);
     }
 
     return TravelRepository.patchTravel(travelId, body);

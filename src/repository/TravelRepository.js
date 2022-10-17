@@ -22,10 +22,6 @@ class TravelRepository {
     return newUserTravel.save();
   }
 
-  setDriverByTravelId(travelId, driverId) {
-    return TravelModel.updateOne({ _id: travelId }, { driverId });
-  }
-
   patchTravel(travelId, body) {
     return TravelModel.updateOne({ _id: travelId }, body);
   }
@@ -36,7 +32,7 @@ class TravelRepository {
       .where('_id')
       .equals(travelId)
       .then(response => {
-        return { driverId: response[0].driverId }
+        return { driverId: response[0].driverId, currentDriverPosition: response[0].currentDriverPosition };
       });
   }
 }

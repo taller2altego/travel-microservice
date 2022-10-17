@@ -15,11 +15,15 @@ const TravelsSchema = new Schema({
     required: true
   },
   source: {
-    type: String,
+    type: JSON,
     required: true
   },
   destination: {
-    type: String,
+    type: JSON,
+    required: true
+  },
+  currentDriverPosition: {
+    type: JSON,
     required: true
   },
   date: {
