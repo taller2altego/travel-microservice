@@ -3,8 +3,18 @@ const TravelModel = require('../model/TravelModel');
 class TravelRepository {
   constructor() { }
 
-  findTravelsByUserId(userId) {
-    return TravelModel.find().where('userId').equals(userId);
+  async findTravelsByUserId(userId, query) {
+    const { page, limit } = query;
+    const travels = await TravelModel
+      .find()
+      .limit(limit * 1)
+      .skip((page - 1) * limit)
+      .where('userId')
+      .equals(userId);
+
+    const count = await TravelModel.count();
+
+    return { data: [...travels], limit, page, total: count };
   }
 }
 

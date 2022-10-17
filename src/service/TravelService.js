@@ -3,8 +3,8 @@ const { errors } = require("config");
 const logger = require('../../winston');
 
 class TravelService {
-  findTravels(userId) {
-    return TravelRepository.findTravelsByUserId(userId);
+  findTravels(userId, query) {
+    return TravelRepository.findTravelsByUserId(userId, query);
   }
 
 

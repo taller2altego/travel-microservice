@@ -4,17 +4,19 @@ class TravelController {
 
   findTravel(req, res) {
     const userId = req.params.userId;
-    return TravelService.findTravels(userId)
-      .then(user => res.status(200).send(user))
-      .catch(err => res.status(404).json({ msg: 'No items found' }));
+    const { page = 1, limit = 10 } = req.query;
+
+    return TravelService.findTravels(userId, { page: Number.parseInt(page), limit: Number.parseInt(limit) })
+      .then(travel => res.status(200).send(travel))
+      .catch(err => res.status(500).json({ msg: 'No items found' }));
   }
 
-  // (req, res) => {
-  //   const userId = req.params.driverId;
-  //   return Travels.find().where('driverId').equals(userId)
-  //     .then(driver => res.status(200).send(driver))
-  //     .catch(err => res.status(404).json({ msg: 'No items found' }));
-  // }
+  createTravel(req, res) {
+    const body = req.body;
+    return TravelService.createTravel(body)
+      .then(travel => res.status(200).send(travel))
+      .catch(err => res.status(500).json({ msg: 'No items found' }));
+  }
 
   // // Reglas:
   // // Las reglas se validarán en este orden y se considerará como válida la primera regla que matchee.
