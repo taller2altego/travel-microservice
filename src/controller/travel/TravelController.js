@@ -18,6 +18,28 @@ class TravelController {
       .catch(err => res.status(500).json({ msg: 'No items found' }));
   }
 
+  patchTravel(req, res, next) {
+    const travelId = req.params.travelId;
+    const body = req.body;
+    return TravelService
+      .patchTravel(travelId, body)
+      .then(() => res.status(200).send({}))
+      .catch(() => res.status(500).json({ msg: 'No items found' }));;
+  }
+
+  checkDriverConfirmation(req, res, next) {
+    const travelId = req.params.travelId;
+    return TravelService
+      .checkDriverConfirmation(travelId)
+      .then(travel => {
+        console.log('travel');
+        console.log(travel);
+        console.log('hasta aca');
+        res.status(200).send(travel);
+      })
+      .catch(() => res.status(500).json({ msg: 'No items found' }));
+  }
+
   // // Reglas:
   // // Las reglas se validarán en este orden y se considerará como válida la primera regla que matchee.
   // // Se crea un viaje a un usuario.

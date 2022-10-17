@@ -21,6 +21,24 @@ class TravelRepository {
     const newUserTravel = new TravelModel(body);
     return newUserTravel.save();
   }
+
+  setDriverByTravelId(travelId, driverId) {
+    return TravelModel.updateOne({ _id: travelId }, { driverId });
+  }
+
+  patchTravel(travelId, body) {
+    return TravelModel.updateOne({ _id: travelId }, body);
+  }
+
+  checkDriverConfirmation(travelId) {
+    return TravelModel
+      .find()
+      .where('_id')
+      .equals(travelId)
+      .then(response => {
+        return { driverId: response[0].driverId }
+      });
+  }
 }
 
 module.exports = new TravelRepository();
