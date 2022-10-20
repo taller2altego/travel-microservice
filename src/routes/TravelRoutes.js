@@ -11,10 +11,14 @@ module.exports = app => {
   };
 
   app.use('/', router);
+  router.get('/travels/users/:userId', TravelController.findTravelsByUserId, handlerResponse);
+  router.get('/travels', TravelController.findTravels, handlerResponse);
+  router.get('/travels/:travelId', TravelController.findTravel, handlerResponse);
+  router.get('/travels/:travelId/driver', TravelController.checkDriverConfirmation, handlerResponse);
+
   router.post('/travels', TravelController.createTravel, handlerResponse);
   router.patch('/travels/:travelId', TravelController.patchTravel, handlerResponse);
-  router.get('/travels/:travelId/driver', TravelController.checkDriverConfirmation, handlerResponse);
-  router.get('/travels/:userId', TravelController.findTravel, handlerResponse);
+
   // router.get('/driver/:driverId/travels', TravelController.find(), handlerResponse);
   // router.get('/travel/states', TravelController.find(), handlerResponse);
   // router.get('/travel/price', TravelController.find(), handlerResponse);

@@ -1,21 +1,47 @@
+const logger = require('../../../winston');
 const TravelService = require('../../service/TravelService');
 
 class TravelController {
 
-  findTravel(req, res) {
+  findTravels(req, res, next) {
+    const { latitude, longitude } = req.query;
+    return TravelService.findTravels([latitude, longitude])
+      .then(travel => res.status(200).send(travel))
+      .catch(err => {
+        logger.error(err);
+        res.status(500).json({ msg: 'No items found' });
+      });
+  }
+
+  findTravel(req, res, next) {
+    return TravelService.findTravel(req.params.travelId)
+      .then(travel => res.status(200).send(travel))
+      .catch(err => {
+        logger.error(err);
+        res.status(500).json({ msg: 'No items found' });
+      });
+  }
+
+  findTravelsByUserId(req, res) {
     const userId = req.params.userId;
     const { page = 1, limit = 10 } = req.query;
 
-    return TravelService.findTravels(userId, { page: Number.parseInt(page), limit: Number.parseInt(limit) })
+    return TravelService.findTravelsByUserId(userId, { page: Number.parseInt(page), limit: Number.parseInt(limit) })
       .then(travel => res.status(200).send(travel))
-      .catch(err => res.status(500).json({ msg: 'No items found' }));
+      .catch(err => {
+        logger.error(err);
+        res.status(500).json({ msg: 'No items found' });
+      });
   }
 
   createTravel(req, res) {
     const body = req.body;
     return TravelService.createTravel(body)
       .then(travel => res.status(200).send(travel))
-      .catch(err => res.status(500).json({ msg: 'No items found' }));
+      .catch(err => {
+        logger.error(err);
+        res.status(500).json({ msg: 'No items found' });
+      });
   }
 
   patchTravel(req, res, next) {

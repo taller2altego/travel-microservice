@@ -3,12 +3,72 @@ const { errors } = require("config");
 const logger = require('../../winston');
 
 class TravelService {
-  findTravels(userId, query) {
-    return TravelRepository.findTravelsByUserId(userId, query);
+
+  parseInputCoordinates(coord) {
+    return {
+      type: 'Point',
+      coordinates: [coord.latitude, coord.longitude]
+    };
+  }
+
+  parseInput(data) {
+    return {
+      ...data,
+      source: this.parseInputCoordinates(data.source),
+      destination: this.parseInputCoordinates(data.destination)
+    };
+  }
+
+  parseResponse(data) {
+    return {
+      ...data,
+      source: { latitude: data.source.coordinates[0], longitude: data.source.coordinates[1] },
+      destination: { latitude: data.destination.coordinates[0], longitude: data.destination.coordinates[1] },
+      currentDriverPosition: {
+        latitude: data.currentDriverPosition && data.currentDriverPosition.coordinates[0],
+        longitude: data.currentDriverPosition && data.currentDriverPosition.coordinates[1]
+      }
+    };
+  }
+
+  parseCurrentPosition(data) {
+    return {
+      driver: data.driverId,
+      currentDriverPosition: {
+        latitude: data.currentDriverPosition.coordinates[0],
+        longitude: data.currentDriverPosition.coordinates[1]
+      }
+    }
+  }
+
+  findTravels(position) {
+    return TravelRepository
+      .findTravels(position)
+      .then(travel => this.parseResponse(travel._doc));
+  }
+
+  findTravel(travelId) {
+    return TravelRepository
+      .findTravel(travelId)
+      .then(travel => this.parseResponse(travel._doc));
+  }
+
+  findTravelsByUserId(userId, query) {
+    return TravelRepository
+      .findTravelsByUserId(userId, query)
+      .then(response => {
+        if (response.data.length) {
+          response.data = response.data.map(currentResponse => this.parseResponse(currentResponse._doc));
+        }
+        return response;
+      });
   }
 
   createTravel(body) {
-    return TravelRepository.createTravel(body);
+    const finalBody = this.parseInput(body);
+    return TravelRepository
+      .createTravel(finalBody)
+      .then(res => this.parseResponse(res._doc));
   }
 
   setDriverByTravelId(travelId, driverId) {
@@ -16,7 +76,8 @@ class TravelService {
   }
 
   updateDriverPosition(travelId, currentDriverPosition) {
-    return TravelRepository.patchTravel(travelId, { currentDriverPosition });
+    const body = this.parseInputCoordinates(currentDriverPosition);
+    return TravelRepository.patchTravel(travelId, { currentDriverPosition: body });
   }
 
   patchTravel(travelId, body) {
@@ -30,9 +91,10 @@ class TravelService {
   }
 
   checkDriverConfirmation(travelId) {
-    return TravelRepository.checkDriverConfirmation(travelId);
+    return TravelRepository
+      .checkDriverConfirmation(travelId)
+      .then(response => this.parseCurrentPosition(response));
   }
-
 }
 
 module.exports = new TravelService();

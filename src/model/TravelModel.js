@@ -1,6 +1,18 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
+const pointSchema = new Schema({
+  type: {
+    type: String,
+    enum: ['Point'],
+    required: true
+  },
+  coordinates: {
+    type: [Number],
+    required: true
+  }
+});
+
 const TravelsSchema = new Schema({
   userId: {
     type: Number,
@@ -15,22 +27,25 @@ const TravelsSchema = new Schema({
     required: true
   },
   source: {
-    type: JSON,
+    type: pointSchema,
+    index: '2dsphere',
     required: true
   },
   destination: {
-    type: JSON,
+    type: pointSchema,
     required: true
   },
   currentDriverPosition: {
-    type: JSON,
-    required: true
+    type: pointSchema,
+    required: false
   },
   date: {
     type: Date,
     required: true
   }
 });
+
+TravelsSchema.index({ source: '2dsphere' });
 
 const Travels = mongoose.model('travels', TravelsSchema);
 

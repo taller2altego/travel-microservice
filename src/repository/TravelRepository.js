@@ -3,6 +3,18 @@ const TravelModel = require('../model/TravelModel');
 class TravelRepository {
   constructor() { }
 
+  findTravels(position) {
+    const source = { $near: { $geometry: { type: 'Point', coordinates: position } } };
+    return TravelModel.findOne({ source });
+  }
+
+  findTravel(travelId) {
+    return TravelModel
+      .findOne()
+      .where('_id')
+      .equals(travelId);
+  }
+
   async findTravelsByUserId(userId, query) {
     const { page, limit } = query;
     const travels = await TravelModel
@@ -12,7 +24,7 @@ class TravelRepository {
       .where('userId')
       .equals(userId);
 
-    const count = await TravelModel.count();
+    const count = await TravelModel.count().where('userId').equals(userId);
 
     return { data: [...travels], limit, page, total: count };
   }
@@ -23,6 +35,7 @@ class TravelRepository {
   }
 
   patchTravel(travelId, body) {
+    console.log(body);
     return TravelModel.updateOne({ _id: travelId }, body);
   }
 
