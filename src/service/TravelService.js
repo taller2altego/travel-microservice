@@ -36,7 +36,7 @@ class TravelService {
         latitude: data.currentDriverPosition.coordinates[0],
         longitude: data.currentDriverPosition.coordinates[1]
       }
-    }
+    };
   }
 
   findTravels(position) {

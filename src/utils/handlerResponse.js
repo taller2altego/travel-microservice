@@ -4,4 +4,4 @@ module.exports = err => {
   } else {
     return { statusCode: err.statusCode, message: err.message };
   }
-}
+};
