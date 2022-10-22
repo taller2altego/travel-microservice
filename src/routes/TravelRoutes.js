@@ -1,5 +1,5 @@
-const validatetravel = require('../controller/travel/TravelValidate');
-const TravelController = require('../controller/travel/TravelController');
+const validatetravel = require('../controller/TravelValidate');
+const TravelController = require('../controller/TravelController');
 
 const router = require('express').Router();
 

@@ -1,4 +1,10 @@
 {
+  "nyc": {
+    "exclude": [
+      "winston.js",
+      "src/utils/handlerResponse.js"
+    ]
+  },
   "name": "travel-microservice",
   "version": "1.0.0",
   "description": "",
@@ -6,7 +12,8 @@
   "scripts": {
     "start": "node server.js",
     "docker-up": "docker-compose up --build -d",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "./node_modules/.bin/mocha ./test/unit/**/*.unit.test.js",
+    "coverage": "nyc npm run test"
   },
   "repository": {
     "type": "git",
@@ -29,6 +36,7 @@
     "mocha": "^10.0.0",
     "mongoose": "^6.6.5",
     "morgan": "^1.10.0",
+    "nyc": "^15.1.0",
     "rewire": "^6.0.0",
     "sinon": "^14.0.0",
     "swagger-jsdoc": "^6.2.5",

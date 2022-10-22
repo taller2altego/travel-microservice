@@ -1,6 +1,6 @@
 var path = require('path');
-const filename = `${path.resolve(__dirname, '/combined.log')}`;
-console.log(filename);
+// const filename = `${path.resolve(__dirname, '/combined.log')}`;
+// console.log(filename);
 
 const { createLogger, format, transports } = require('winston');
 const { combine, splat, timestamp, printf } = format;
@@ -22,8 +22,8 @@ const logger = createLogger({
     myFormat
   ),
   transports: [
-    new transports.Console({ level: 'info' }),
-    new transports.File({ filename: "/usr/src/app/combined.log", level: 'info' }),
+    new transports.Console({ level: 'info' })
+    // new transports.File({ filename: "/usr/src/app/combined.log", level: 'info' }),
   ]
 });
 

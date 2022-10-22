@@ -1,46 +1,66 @@
-const logger = require('../../../winston');
-const TravelService = require('../../service/TravelService');
+const logger = require('../../winston');
+const TravelService = require('../service/TravelService');
+const handlerResponse = require('../utils/handlerResponse');
 
 class TravelController {
 
   findTravels(req, res, next) {
     const { latitude, longitude } = req.query;
     return TravelService.findTravels([latitude, longitude])
-      .then(travel => res.status(200).send(travel))
+      .then(travel => {
+        const data = travel;
+        res.customResponse = { statusCode: 200, data };
+        next();
+      })
       .catch(err => {
         logger.error(err);
-        res.status(500).json({ msg: 'No items found' });
+        res.customResponse = handlerResponse(err);
+        next();
       });
   }
 
   findTravel(req, res, next) {
     return TravelService.findTravel(req.params.travelId)
-      .then(travel => res.status(200).send(travel))
+      .then(travel => {
+        const data = travel;
+        res.customResponse = { statusCode: 200, data };
+        next();
+      })
       .catch(err => {
         logger.error(err);
-        res.status(500).json({ msg: 'No items found' });
+        res.customResponse = handlerResponse(err);
+        next();
       });
   }
 
-  findTravelsByUserId(req, res) {
+  findTravelsByUserId(req, res, next) {
     const userId = req.params.userId;
     const { page = 1, limit = 10 } = req.query;
 
     return TravelService.findTravelsByUserId(userId, { page: Number.parseInt(page), limit: Number.parseInt(limit) })
-      .then(travel => res.status(200).send(travel))
+      .then(travel => {
+        res.customResponse = { statusCode: 200, ...travel };
+        next();
+      })
       .catch(err => {
         logger.error(err);
-        res.status(500).json({ msg: 'No items found' });
+        res.customResponse = handlerResponse(err);
+        next();
       });
   }
 
-  createTravel(req, res) {
+  createTravel(req, res, next) {
     const body = req.body;
     return TravelService.createTravel(body)
-      .then(travel => res.status(200).send(travel))
+      .then(travel => {
+        const data = travel;
+        res.customResponse = { statusCode: 200, data };
+        next();
+      })
       .catch(err => {
         logger.error(err);
-        res.status(500).json({ msg: 'No items found' });
+        res.customResponse = handlerResponse(err);
+        next();
       });
   }
 
@@ -49,8 +69,16 @@ class TravelController {
     const body = req.body;
     return TravelService
       .patchTravel(travelId, body)
-      .then(() => res.status(200).send({}))
-      .catch(() => res.status(500).json({ msg: 'No items found' }));;
+      .then(travel => {
+        const data = travel;
+        res.customResponse = { statusCode: 201 };
+        next();
+      })
+      .catch(err => {
+        logger.error(err);
+        res.customResponse = handlerResponse(err);
+        next();
+      });
   }
 
   checkDriverConfirmation(req, res, next) {
@@ -58,12 +86,15 @@ class TravelController {
     return TravelService
       .checkDriverConfirmation(travelId)
       .then(travel => {
-        console.log('travel');
-        console.log(travel);
-        console.log('hasta aca');
-        res.status(200).send(travel);
+        const data = travel;
+        res.customResponse = { statusCode: 200, data };
+        next();
       })
-      .catch(() => res.status(500).json({ msg: 'No items found' }));
+      .catch(err => {
+        logger.error(err);
+        res.customResponse = handlerResponse(err);
+        next();
+      });
   }
 
   // // Reglas:
