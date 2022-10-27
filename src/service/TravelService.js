@@ -1,4 +1,5 @@
 const TravelRepository = require('../repository/TravelRepository');
+const { CurrentPositionIsRequired } = require('../utils/errors');
 
 class TravelService {
 
@@ -30,11 +31,12 @@ class TravelService {
   }
 
   parseCurrentPosition(data) {
+    console.log(data);
     return {
-      driver: data.driverId,
+      driverId: data.driverId,
       currentDriverPosition: {
-        latitude: data.currentDriverPosition.coordinates[0],
-        longitude: data.currentDriverPosition.coordinates[1]
+        latitude: data.currentDriverPosition && data.currentDriverPosition.coordinates[0],
+        longitude: data.currentDriverPosition && data.currentDriverPosition.coordinates[1]
       }
     };
   }
@@ -69,8 +71,9 @@ class TravelService {
       .then(res => this.parseResponse(res._doc));
   }
 
-  setDriverByTravelId(travelId, driverId) {
-    return TravelRepository.patchTravel(travelId, { driverId });
+  setDriverByTravelId(travelId, driverId, currentDriverPosition) {
+    const position = this.parseInputCoordinates(currentDriverPosition);
+    return TravelRepository.patchTravel(travelId, { driverId, currentDriverPosition: position });
   }
 
   updateDriverPosition(travelId, currentDriverPosition) {
@@ -78,9 +81,12 @@ class TravelService {
     return TravelRepository.patchTravel(travelId, { currentDriverPosition: body });
   }
 
-  patchTravel(travelId, body) {
+  async patchTravel(travelId, body) {
     if (body.driverId) {
-      return this.setDriverByTravelId(travelId, body.driverId);
+      if (!body.currentDriverPosition) {
+        throw new CurrentPositionIsRequired();
+      }
+      return this.setDriverByTravelId(travelId, body.driverId, body.currentDriverPosition);
     } else if (body.currentDriverPosition) {
       return this.updateDriverPosition(travelId, body.currentDriverPosition);
     }
