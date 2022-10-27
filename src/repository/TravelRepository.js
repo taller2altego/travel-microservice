@@ -16,6 +16,7 @@ class TravelRepository {
   }
 
   async findTravelsByUserId(userId, query) {
+    console.log(query)
     const { page, limit } = query;
     const travels = await TravelModel
       .find()

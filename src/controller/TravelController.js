@@ -6,7 +6,7 @@ class TravelController {
 
   findTravels(req, res, next) {
     const { latitude, longitude } = req.query;
-    return TravelService.findTravels([latitude, longitude])
+    return TravelService.findTravels([longitude, latitude])
       .then(travel => {
         const data = travel;
         res.customResponse = { statusCode: 200, data };

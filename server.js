@@ -7,10 +7,7 @@ const morgan = require('morgan');
 const logger = require('./winston');
 
 mongoose
-  .connect(
-    'mongodb://mongo:27017/docker-node-mongo',
-    { useNewUrlParser: true }
-  )
+  .connect(process.env.MONGOATLAS_URI || 'mongodb://mongo:27017/docker-node-mongo', { useNewUrlParser: true })
   .then(() => console.log('MongoDB Connected'))
   .catch(err => console.log(err));
 
@@ -52,7 +49,7 @@ app.get("/", (req, res) => {
 
 require("./src/routes/TravelRoutes")(app);
 
-app.listen(5000, () => console.log('is connected'));
+app.listen(process.env.PORT || 5000, () => console.log('is connected'));
 
 module.exports = app;
 
