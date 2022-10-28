@@ -18,9 +18,19 @@ const TravelsSchema = new Schema({
     type: Number,
     required: true
   },
+  userScore: {
+    type: Number,
+    required: false,
+    default: 0
+  },
   driverId: {
     type: Number,
     required: false,
+  },
+  driverScore: {
+    type: Number,
+    required: false,
+    default: 0
   },
   price: {
     type: Number,
