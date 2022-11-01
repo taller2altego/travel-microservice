@@ -48,6 +48,7 @@ app.get("/", (req, res) => {
 });
 
 require("./src/routes/TravelRoutes")(app);
+require("./src/routes/FeeRoutes")(app);
 
 app.listen(process.env.PORT || 5000, () => console.log('is connected'));
 
