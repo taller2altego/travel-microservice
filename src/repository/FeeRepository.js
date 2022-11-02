@@ -3,22 +3,22 @@ const FeeModel = require('../model/FeeModel');
 class FeeRepository {
   constructor() {
     this.keysToParse = [
-      'dailyTravels',
-      'monthlyTravels',
-      'seniority',
-      'methodOfPayment',
-      'travelDuration',
-      'travelDistance',
-      'travelDate',
-      'travelHour'
+      'timeWindow',
+      'seniority', // ok
+      'methodOfPayment', // ok
+      'travelDuration', // ok
+      'travelDate', // ok
+      'travelHour' // ok
     ];
   }
 
   parseData(data) {
-    console.log(data);
+
     const id = data._doc._id || undefined;
-    price = data._doc.price || undefined;
-    applied = data._doc.applied || undefined;
+    const price = data._doc.price || undefined;
+    const applied = data._doc.applied || undefined;
+    const travelDistance = data._doc.travelDistance || undefined;
+
     return this.keysToParse.reduce((parsedObject, keyToBeParsed) => {
       if (data[keyToBeParsed] === undefined) {
         return parsedObject;
@@ -30,7 +30,7 @@ class FeeRepository {
         const { _id, ...parsedValue } = data[keyToBeParsed]._doc;
         return { ...parsedObject, [keyToBeParsed]: parsedValue };
       }
-    }, { id, price, applied });
+    }, { id, price, applied, travelDistance });
   }
 
   async findFees(page, limit) {
@@ -50,6 +50,14 @@ class FeeRepository {
       .findOne()
       .where('_id')
       .equals(id)
+      .then(row => this.parseData(row));
+  }
+
+  findAppliedFee() {
+    return FeeModel
+      .findOne()
+      .where('applied')
+      .equals(true)
       .then(row => this.parseData(row));
   }
 

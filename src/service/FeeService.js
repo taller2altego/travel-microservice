@@ -1,5 +1,5 @@
 const FeeRepository = require('../repository/FeeRepository');
-const { FeeNotFound } = require('../utils/errors');
+const { FeeNotFound, InvalidPaymentMethod } = require('../utils/errors');
 
 class FeeService {
 
@@ -25,6 +25,61 @@ class FeeService {
 
   patchFee(feeId, body) {
     return FeeRepository.patchFee(feeId, body);
+  }
+
+  priceByDay(price, date, travelDate) {
+    const dayOfWeekName = date.toLocaleString('default', { weekday: 'long' });
+    const matchDay = travelDate.filter(({ day }) => day === dayOfWeekName)[0];
+    if (matchDay !== undefined) {
+      return price + matchDay.extraFee;
+    } else {
+      return price;
+    }
+  }
+
+  priceByHour(price, date, travelHours) {
+    const currentHour = date.getHours();
+    const matchHour = travelHours.filter(({ hour }) => hour === currentHour)[0];
+    if (matchHour !== undefined) {
+      return price + matchHour.extraFee;
+    } else {
+      return price;
+    }
+  }
+
+  priceByDistance(price, distance, distanceFee) {
+    return price + distance * distanceFee;
+  }
+
+  priceByDuration(price, distance, duration, durationFee) {
+    if (distance * durationFee.quantity > duration) {
+      return price + price * durationFee.percentageToChange;
+    }
+  }
+
+  priceByPayment(price, paymentMethod, paymentsFee) {
+    const selectedPayment = paymentsFee.filter(({ paymentType }) => paymentType === paymentMethod)[0];
+    if (selectedPayment === undefined) {
+      throw new InvalidPaymentMethod();
+    }
+    return price + price * selectedPayment.percentageToChange;
+  }
+
+  priceBySeniority(price, seniority, seniorityFee) {
+    const selectedPayment = seniorityFee.filter(({ quantity }) => quantity < seniority)[0];
+    return price + price * selectedPayment.percentageToChange;
+  }
+
+  async getPrice(query) {
+    const { id, price, applied, ...fees } = await (query.feeId ? FeeRepository.findFeeById(query.feeId) : FeeRepository.findAppliedFee());
+    const date = new Date(query.date);
+    const priceByDay = this.priceByDay(price, date, fees.travelDate);
+    const priceByHour = this.priceByHour(priceByDay, date, fees.travelHour);
+    const distancePrice = this.priceByDistance(priceByHour, query.distance, fees.travelDistance);
+    const durationPrice = this.priceByDuration(distancePrice, query.distance, query.duration, fees.travelDuration);
+    const paymentMethodPrice = this.priceByPayment(durationPrice, query.paymentMethod, fees.methodOfPayment);
+    const seniorityPrice = this.priceBySeniority(paymentMethodPrice, Number.parseInt(query.seniority), fees.seniority);
+    return { price: seniorityPrice };
   }
 }
 

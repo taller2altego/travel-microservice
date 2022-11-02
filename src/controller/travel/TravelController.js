@@ -13,7 +13,7 @@ class TravelController {
         next();
       })
       .catch(err => {
-        logger.error(err);
+        logger.error(err.stack);
         res.customResponse = handlerResponse(err);
         next();
       });
@@ -27,7 +27,7 @@ class TravelController {
         next();
       })
       .catch(err => {
-        logger.error(err);
+        logger.error(err.stack);
         res.customResponse = handlerResponse(err);
         next();
       });
@@ -43,7 +43,7 @@ class TravelController {
         next();
       })
       .catch(err => {
-        logger.error(err);
+        logger.error(err.stack);
         res.customResponse = handlerResponse(err);
         next();
       });
@@ -58,7 +58,7 @@ class TravelController {
         next();
       })
       .catch(err => {
-        logger.error(err);
+        logger.error(err.stack);
         res.customResponse = handlerResponse(err);
         next();
       });
@@ -75,7 +75,7 @@ class TravelController {
         next();
       })
       .catch(err => {
-        logger.error(err);
+        logger.error(err.stack);
         res.customResponse = handlerResponse(err);
         next();
       });
@@ -91,7 +91,7 @@ class TravelController {
         next();
       })
       .catch(err => {
-        logger.error(err);
+        logger.error(err.stack);
         res.customResponse = handlerResponse(err);
         next();
       });
