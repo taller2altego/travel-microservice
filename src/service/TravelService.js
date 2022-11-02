@@ -71,6 +71,14 @@ class TravelService {
       .then(res => this.parseResponse(res._doc));
   }
 
+  setUserScoreByTravelId(travelId, userScore) {
+    return TravelRepository.patchTravel(travelId, {userScore});
+  }
+
+  setDriverScoreByTravelId(travelId, driverScore) {
+    return TravelRepository.patchTravel(travelId, {driverScore});
+  }
+
   setDriverByTravelId(travelId, driverId, currentDriverPosition) {
     const position = this.parseInputCoordinates(currentDriverPosition);
     return TravelRepository.patchTravel(travelId, { driverId, currentDriverPosition: position });
@@ -89,7 +97,11 @@ class TravelService {
       return this.setDriverByTravelId(travelId, body.driverId, body.currentDriverPosition);
     } else if (body.currentDriverPosition) {
       return this.updateDriverPosition(travelId, body.currentDriverPosition);
-    }
+    } else if (body.userScore) {
+      return this.setUserScoreByTravelId(travelId, body.userScore);
+    } else if (body.driverScore) {
+      return this.setDriverScoreByTravelId(travelId, body.driverScore);
+    } 
 
     return TravelRepository.patchTravel(travelId, body);
   }

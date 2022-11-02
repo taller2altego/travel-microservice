@@ -53,18 +53,19 @@ class FeeRepository {
       .then(row => this.parseData(row));
   }
 
-  async createFee(body) {
-    const newFee = new FeeModel({ ...body, applied: true });
-    await FeeModel.updateOne({ applied: true }, { applied: false });
+  createFee(body) {
+    const newFee = new FeeModel({ ...body, applied: false });
     return newFee
       .save()
       .then(row => this.parseData(row));
   }
 
-  patchFee(feeId, body) {
-    console.log(1);
-    return FeeModel
-      .updateOne({ _id: feeId }, body);
+  async patchFee(feeId, body) {
+    if (body.applied) {
+      await FeeModel.updateOne({ applied: true }, { applied: false });
+    }
+
+    return FeeModel.updateOne({ _id: feeId }, body);
   }
 }
 
