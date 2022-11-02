@@ -22,4 +22,6 @@ module.exports = app => {
   router.get('/fees/:feeId', logInput, FeeController.findFee, handlerResponse);
   router.post('/fees', logInput, FeeController.createFee, handlerResponse);
   router.patch('/fees/:feeId', logInput, FeeController.patchFee, handlerResponse);
+
+  router.get('/price', logInput, FeeController.getPrice, handlerResponse);
 };

@@ -11,7 +11,7 @@ class FeeController {
         next();
       })
       .catch(err => {
-        logger.error(err);
+        logger.error(err.stack);
         res.customResponse = handlerResponse(err);
         next();
       });
@@ -24,7 +24,7 @@ class FeeController {
         next();
       })
       .catch(err => {
-        logger.error(err);
+        logger.error(err.stack);
         res.customResponse = handlerResponse(err);
         next();
       });
@@ -38,7 +38,7 @@ class FeeController {
         next();
       })
       .catch(err => {
-        logger.error(err);
+        logger.error(err.stack);
         res.customResponse = handlerResponse(err);
         next();
       });
@@ -54,7 +54,20 @@ class FeeController {
         next();
       })
       .catch(err => {
-        logger.error(err);
+        logger.error(err.stack);
+        res.customResponse = handlerResponse(err);
+        next();
+      });
+  }
+
+  getPrice(req, res, next) {
+    return FeeService.getPrice(req.query)
+      .then(price => {
+        res.customResponse = { statusCode: 200, data: price };
+        next();
+      })
+      .catch(err => {
+        logger.error(err.stack);
         res.customResponse = handlerResponse(err);
         next();
       });

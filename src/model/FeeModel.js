@@ -28,7 +28,7 @@ const changePriceByDay = new Schema({
     type: String,
     required: true
   },
-  percentageToChange: {
+  extraFee: {
     type: Number,
     required: true
   }
@@ -39,7 +39,7 @@ const changePriceByHour = new Schema({
     type: String,
     required: true
   },
-  percentageToChange: {
+  extraFee: {
     type: Number,
     required: true
   }
@@ -54,18 +54,14 @@ const FeesSchema = new Schema({
     type: Boolean,
     required: true
   },
-  dailyTravels: {
+  timeWindow: [{
     type: changePriceSchema,
     required: true
-  },
-  monthlyTravels: {
+  }],
+  seniority: [{
     type: changePriceSchema,
     required: true
-  },
-  seniority: {
-    type: changePriceSchema,
-    required: true
-  },
+  }],
   methodOfPayment: [
     { type: paymentSchema, required: true }
   ],
@@ -74,7 +70,7 @@ const FeesSchema = new Schema({
     required: true
   },
   travelDistance: {
-    type: changePriceSchema,
+    type: Number,
     required: true
   },
   travelDate: [{ type: changePriceByDay, required: true }],
@@ -84,3 +80,12 @@ const FeesSchema = new Schema({
 const Fees = mongoose.model('fees', FeesSchema);
 
 module.exports = Fees;
+
+// dailyTravels: {
+  //   type: changePriceSchema,
+  //   required: true
+  // },
+  // monthlyTravels: {
+  //   type: changePriceSchema,
+  //   required: true
+  // },
