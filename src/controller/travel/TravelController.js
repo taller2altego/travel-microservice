@@ -1,6 +1,6 @@
-const logger = require('../../winston');
-const TravelService = require('../service/TravelService');
-const handlerResponse = require('../utils/handlerResponse');
+const logger = require('../../../winston');
+const TravelService = require('../../service/TravelService');
+const handlerResponse = require('../../utils/handlerResponse');
 
 class TravelController {
 

@@ -1,5 +1,6 @@
-const validatetravel = require('../controller/TravelValidate');
-const TravelController = require('../controller/TravelController');
+const validatetravel = require('../controller/travel/TravelValidate');
+const TravelController = require('../controller/travel/TravelController');
+const logger = require('../../winston');
 
 const router = require('express').Router();
 
@@ -10,14 +11,20 @@ module.exports = app => {
     res.status(statusCode).send(otherFields);
   };
 
-  app.use('/', router);
-  router.get('/travels/users/:userId', TravelController.findTravelsByUserId, handlerResponse);
-  router.get('/travels', TravelController.findTravels, handlerResponse);
-  router.get('/travels/:travelId', TravelController.findTravel, handlerResponse);
-  router.get('/travels/:travelId/driver', TravelController.checkDriverConfirmation, handlerResponse);
+  const logInput = (req, res, next) => {
+    loggger.info(JSON.stringify(req.body, undefined, 2));
+    logger.info(JSON.stringify(req.query, undefined, 2));
+    next();
+  };
 
-  router.post('/travels', TravelController.createTravel, handlerResponse);
-  router.patch('/travels/:travelId', TravelController.patchTravel, handlerResponse);
+  app.use('/', router);
+  router.get('/travels/users/:userId', logInput, TravelController.findTravelsByUserId, handlerResponse);
+  router.get('/travels', logInput, TravelController.findTravels, handlerResponse);
+  router.get('/travels/:travelId', logInput, TravelController.findTravel, handlerResponse);
+  router.get('/travels/:travelId/driver', logInput, TravelController.checkDriverConfirmation, handlerResponse);
+
+  router.post('/travels', logInput, TravelController.createTravel, handlerResponse);
+  router.patch('/travels/:travelId', logInput, TravelController.patchTravel, handlerResponse);
 
   // router.get('/driver/:driverId/travels', TravelController.find(), handlerResponse);
   // router.get('/travel/states', TravelController.find(), handlerResponse);
