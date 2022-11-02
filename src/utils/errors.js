@@ -7,10 +7,19 @@ class CurrentPositionIsRequired extends Error {
 }
 
 class FeeNotFound extends Error {
-  constructor(message = 'Fee not found', code = 400) {
+  constructor(message = 'Fee not found', code = 404) {
     super();
     this.message = message;
     this.statusCode = code;
   }
 }
-module.exports = { CurrentPositionIsRequired, FeeNotFound };
+
+class InvalidPaymentMethod extends Error {
+  constructor(message = 'Invalid payment method', code = 400) {
+    super();
+    this.message = message;
+    this.statusCode = code;
+  }
+}
+
+module.exports = { CurrentPositionIsRequired, FeeNotFound, InvalidPaymentMethod };
