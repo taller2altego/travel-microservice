@@ -12,7 +12,7 @@ module.exports = app => {
   };
 
   const logInput = (req, res, next) => {
-    loggger.info(JSON.stringify(req.body, undefined, 2));
+    logger.info(JSON.stringify(req.body, undefined, 2));
     logger.info(JSON.stringify(req.query, undefined, 2));
     next();
   };
