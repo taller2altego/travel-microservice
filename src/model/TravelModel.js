@@ -41,8 +41,16 @@ const TravelsSchema = new Schema({
     index: '2dsphere',
     required: true
   },
+  sourceAddress: {
+    type: String,
+    required: true
+  },
   destination: {
     type: pointSchema,
+    required: true
+  },
+  destinationAddress: {
+    type: String,
     required: true
   },
   currentDriverPosition: {
