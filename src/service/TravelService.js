@@ -31,7 +31,6 @@ class TravelService {
   }
 
   parseCurrentPosition(data) {
-    console.log(data);
     return {
       driverId: data.driverId,
       currentDriverPosition: {
@@ -44,13 +43,13 @@ class TravelService {
   findTravels(position) {
     return TravelRepository
       .findTravels(position)
-      .then(travel => this.parseResponse(travel._doc));
+      .then(travel => travel ? this.parseResponse(travel._doc) : {});
   }
 
   findTravel(travelId) {
     return TravelRepository
       .findTravel(travelId)
-      .then(travel => this.parseResponse(travel._doc));
+      .then(travel => travel ? this.parseResponse(travel._doc) : {});
   }
 
   findTravelsByUserId(userId, query) {
@@ -72,11 +71,11 @@ class TravelService {
   }
 
   setUserScoreByTravelId(travelId, userScore) {
-    return TravelRepository.patchTravel(travelId, {userScore});
+    return TravelRepository.patchTravel(travelId, { userScore });
   }
 
   setDriverScoreByTravelId(travelId, driverScore) {
-    return TravelRepository.patchTravel(travelId, {driverScore});
+    return TravelRepository.patchTravel(travelId, { driverScore });
   }
 
   setDriverByTravelId(travelId, driverId, currentDriverPosition) {
@@ -101,7 +100,7 @@ class TravelService {
       return this.setUserScoreByTravelId(travelId, body.userScore);
     } else if (body.driverScore) {
       return this.setDriverScoreByTravelId(travelId, body.driverScore);
-    } 
+    }
 
     return TravelRepository.patchTravel(travelId, body);
   }
