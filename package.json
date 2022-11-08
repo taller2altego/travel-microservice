@@ -10,7 +10,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon -L --inspect=0.0.0.0 server.js",
+    "start": "node server.js",
+    "docker-start": "nodemon -L --inspect=0.0.0.0 server.js",
     "docker-up": "docker-compose up --build -d",
     "test": "./node_modules/.bin/mocha ./test/unit/**/*.unit.test.js",
     "coverage": "nyc npm run test"

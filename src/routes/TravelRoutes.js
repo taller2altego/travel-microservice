@@ -6,6 +6,7 @@ const router = require('express').Router();
 
 module.exports = app => {
 
+
   const handlerResponse = (req, res) => {
     const { statusCode, ...otherFields } = res.customResponse;
     res.status(statusCode).send(otherFields);
