@@ -6,7 +6,7 @@ class TravelService {
   parseInputCoordinates(coord) {
     return {
       type: 'Point',
-      coordinates: [coord.latitude, coord.longitude]
+      coordinates: [coord.longitude, coord.latitude]
     };
   }
 
@@ -21,11 +21,11 @@ class TravelService {
   parseResponse(data) {
     return {
       ...data,
-      source: { latitude: data.source.coordinates[0], longitude: data.source.coordinates[1] },
-      destination: { latitude: data.destination.coordinates[0], longitude: data.destination.coordinates[1] },
+      source: { latitude: data.source.coordinates[1], longitude: data.source.coordinates[0] },
+      destination: { latitude: data.destination.coordinates[1], longitude: data.destination.coordinates[0] },
       currentDriverPosition: {
-        latitude: data.currentDriverPosition && data.currentDriverPosition.coordinates[0],
-        longitude: data.currentDriverPosition && data.currentDriverPosition.coordinates[1]
+        latitude: data.currentDriverPosition && data.currentDriverPosition.coordinates[1],
+        longitude: data.currentDriverPosition && data.currentDriverPosition.coordinates[0]
       }
     };
   }
@@ -35,8 +35,8 @@ class TravelService {
     return {
       driverId: data.driverId,
       currentDriverPosition: {
-        latitude: data.currentDriverPosition && data.currentDriverPosition.coordinates[0],
-        longitude: data.currentDriverPosition && data.currentDriverPosition.coordinates[1]
+        latitude: data.currentDriverPosition && data.currentDriverPosition.coordinates[1],
+        longitude: data.currentDriverPosition && data.currentDriverPosition.coordinates[0]
       }
     };
   }
