@@ -55,6 +55,7 @@ class FeeService {
     if (distance * durationFee.quantity > duration) {
       return price + price * durationFee.percentageToChange;
     }
+    return price;
   }
 
   priceByPayment(price, paymentMethod, paymentsFee) {
@@ -67,18 +68,24 @@ class FeeService {
 
   priceBySeniority(price, seniority, seniorityFee) {
     const selectedPayment = seniorityFee.filter(({ quantity }) => quantity < seniority)[0];
-    return price + price * selectedPayment.percentageToChange;
+    return selectedPayment ? price + price * selectedPayment.percentageToChange : price;
   }
 
   async getPrice(query) {
     const { id, price, applied, ...fees } = await (query.feeId ? FeeRepository.findFeeById(query.feeId) : FeeRepository.findAppliedFee());
     const date = new Date(query.date);
     const priceByDay = this.priceByDay(price, date, fees.travelDate);
+    console.log(priceByDay);
     const priceByHour = this.priceByHour(priceByDay, date, fees.travelHour);
+    console.log(priceByHour);
     const distancePrice = this.priceByDistance(priceByHour, query.distance, fees.travelDistance);
+    console.log(distancePrice);
     const durationPrice = this.priceByDuration(distancePrice, query.distance, query.duration, fees.travelDuration);
+    console.log(durationPrice);
     const paymentMethodPrice = this.priceByPayment(durationPrice, query.paymentMethod, fees.methodOfPayment);
+    console.log(paymentMethodPrice);
     const seniorityPrice = this.priceBySeniority(paymentMethodPrice, Number.parseInt(query.seniority), fees.seniority);
+    console.log(seniorityPrice);
     return { price: seniorityPrice };
   }
 }
