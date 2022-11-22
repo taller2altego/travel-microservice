@@ -1,6 +1,6 @@
 const TravelRepository = require('../repository/TravelRepository');
 const { CurrentPositionIsRequired } = require('../utils/errors');
-
+const { SERCHING_DRIVER, WAITING_DRIVER, STARTED, FINISHED } = require('../utils/statesTravel');
 class TravelService {
 
   parseInputCoordinates(coord) {
@@ -65,18 +65,22 @@ class TravelService {
   }
 
   createTravel(body) {
-    const finalBody = this.parseInput(body);
+    const finalBody = this.parseInput({ ...body, status: SERCHING_DRIVER });
     return TravelRepository
       .createTravel(finalBody)
       .then(res => this.parseResponse(res._doc));
   }
 
   setUserScoreByTravelId(travelId, userScore) {
-    return TravelRepository.patchTravel(travelId, {userScore});
+    return TravelRepository.patchTravel(travelId, { userScore });
   }
 
   setDriverScoreByTravelId(travelId, driverScore) {
-    return TravelRepository.patchTravel(travelId, {driverScore});
+    return TravelRepository.patchTravel(travelId, { driverScore });
+  }
+
+  setStateTravelByTravelId(travelId, state) {
+    return TravelRepository.patchTravel(travelId, { state });
   }
 
   setDriverByTravelId(travelId, driverId, currentDriverPosition) {
@@ -94,6 +98,7 @@ class TravelService {
       if (!body.currentDriverPosition) {
         throw new CurrentPositionIsRequired();
       }
+      this.setStateTravelByTravelId(travelId, body);
       return this.setDriverByTravelId(travelId, body.driverId, body.currentDriverPosition);
     } else if (body.currentDriverPosition) {
       return this.updateDriverPosition(travelId, body.currentDriverPosition);
@@ -101,9 +106,28 @@ class TravelService {
       return this.setUserScoreByTravelId(travelId, body.userScore);
     } else if (body.driverScore) {
       return this.setDriverScoreByTravelId(travelId, body.driverScore);
-    } 
+    }
 
     return TravelRepository.patchTravel(travelId, body);
+  }
+
+  acceptTravel(travelId, body) {
+    const status = WAITING_DRIVER;
+    return TravelRepository.patchTravel(travelId, { status });
+  }
+
+  rejectTravel(travelId, body, isRejectedByTravel) {
+    const status = isRejectedByTravel === true ? FINISHED : WAITING_DRIVER;
+    return TravelRepository.patchTravel(travelId, { status, driverId: null, currentDriverPosition: null });
+  }
+
+  startTravel(travelId, body) {
+    const status = STARTED;
+    return TravelRepository.patchTravel(travelId, { status });
+  }
+  finishTravel(travelId, body) {
+    const status = FINISHED;
+    return TravelRepository.patchTravel(travelId, { status });
   }
 
   checkDriverConfirmation(travelId) {

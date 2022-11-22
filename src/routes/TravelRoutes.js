@@ -25,6 +25,10 @@ module.exports = app => {
 
   router.post('/travels', logInput, TravelController.createTravel, handlerResponse);
   router.patch('/travels/:travelId', logInput, TravelController.patchTravel, handlerResponse);
+  router.post('/travels/:travelId/accept', logInput, TravelController.acceptTravel, handlerResponse);
+  router.post('/travels/:travelId/reject', logInput, TravelController.rejectTravel, handlerResponse);
+  router.post('/travels/:travelId/start', logInput, TravelController.startTravel, handlerResponse);
+  router.post('/travels/:travelId/finish', logInput, TravelController.finishTravel, handlerResponse);
 
   // router.get('/driver/:driverId/travels', TravelController.find(), handlerResponse);
   // router.get('/travel/states', TravelController.find(), handlerResponse);
