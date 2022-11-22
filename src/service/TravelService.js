@@ -1,6 +1,6 @@
 const TravelRepository = require('../repository/TravelRepository');
 const { CurrentPositionIsRequired } = require('../utils/errors');
-const { SERCHING_DRIVER, WAITING_DRIVER, STARTED, FINISHED } = require('../utils/statesTravel');
+const { SERCHING_DRIVER, WAITING_DRIVER, STARTED, FINISHED, CANCELLED } = require('../utils/statesTravel');
 class TravelService {
 
   parseInputCoordinates(coord) {
@@ -117,7 +117,7 @@ class TravelService {
   }
 
   rejectTravel(travelId, body, isRejectedByTravel) {
-    const status = isRejectedByTravel === true ? FINISHED : WAITING_DRIVER;
+    const status = isRejectedByTravel === true ? CANCELLED : WAITING_DRIVER;
     return TravelRepository.patchTravel(travelId, { status, driverId: null, currentDriverPosition: null });
   }
 
