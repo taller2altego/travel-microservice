@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
+const { SERCHING_DRIVER } = require('../utils/statesTravel');
 
 const pointSchema = new Schema({
   type: {
@@ -56,6 +57,11 @@ const TravelsSchema = new Schema({
   currentDriverPosition: {
     type: pointSchema,
     required: false
+  },
+  status:{
+    type:String,
+    required: true,
+    default: SERCHING_DRIVER
   },
   date: {
     type: Date,
