@@ -80,8 +80,10 @@ class TravelService {
     return TravelRepository.patchTravel(travelId, { driverScore });
   }
 
-  setStateTravelByTravelId(travelId, state) {
-    return TravelRepository.patchTravel(travelId, { state });
+  setStateTravelByTravelId(travelId, status) {
+    console.log(travelId);
+    console.log(status);
+    return TravelRepository.patchTravel(travelId, status);
   }
 
   setDriverByTravelId(travelId, driverId, currentDriverPosition) {
@@ -99,7 +101,6 @@ class TravelService {
       if (!body.currentDriverPosition) {
         throw new CurrentPositionIsRequired();
       }
-      this.setStateTravelByTravelId(travelId, body);
       return this.setDriverByTravelId(travelId, body.driverId, body.currentDriverPosition);
     } else if (body.currentDriverPosition) {
       return this.updateDriverPosition(travelId, body.currentDriverPosition);
@@ -118,7 +119,7 @@ class TravelService {
       throw new InvalidTypeTravelForMethod('Para aceptar un viaje, este debe estar en estado SEARCHING DRIVER');
     }
     const status = WAITING_DRIVER;
-    return TravelRepository.patchTravel(travelId, { status });
+    return await this.setStateTravelByTravelId(travelId, { status });
   }
 
   async rejectTravel(travelId, body, isRejectedByTravel) {
@@ -131,7 +132,7 @@ class TravelService {
     }
     
     const status = isRejectedByTravel === true ? CANCELLED : WAITING_DRIVER;
-    return TravelRepository.patchTravel(travelId, { status, driverId: null, currentDriverPosition: null });
+    return this.setStateTravelByTravelId(travelId, { status, driverId: null, currentDriverPosition: null });
   }
 
   async startTravel(travelId, body) {
@@ -141,7 +142,7 @@ class TravelService {
       throw new InvalidTypeTravelForMethod('Para iniciar un viaje, este debe estar en estado WAITING DRIVER');
     }
     const status = STARTED;
-    return TravelRepository.patchTravel(travelId, { status });
+    return this.setStateTravelByTravelId(travelId, { status });
   }
   async finishTravel(travelId, body) {
     const travel = await TravelRepository.findTravel(travelId);
@@ -149,7 +150,7 @@ class TravelService {
       throw new InvalidTypeTravelForMethod('Para iniciar un viaje, este debe estar en estado STARTED');
     }
     const status = FINISHED;
-    return TravelRepository.patchTravel(travelId, { status });
+    return this.setStateTravelByTravelId(travelId, { status });
   }
 
   checkDriverConfirmation(travelId) {
