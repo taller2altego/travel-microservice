@@ -66,7 +66,7 @@ class TravelController {
       });
   }
 
-  
+
   acceptTravel(req, res, next) {
     const travelId = req.params.travelId;
     return TravelService
@@ -76,9 +76,13 @@ class TravelController {
         res.customResponse = { statusCode: 204 };
         next();
       })
-      .catch(err => {
-        logger.error(err.stack);
-        res.customResponse = handlerResponse(err);
+      .catch((err) => {
+        logger.error(JSON.stringify(err));
+        if (err.statusCode === undefined) {
+          res.customResponse = { statusCode: 500, message: 'Unexpected Error' };
+        } else {
+          res.customResponse = { statusCode: err.statusCode, message: err.message };
+        }
         next();
       });
   };
@@ -93,9 +97,13 @@ class TravelController {
         res.customResponse = { statusCode: 204 };
         next();
       })
-      .catch(err => {
-        logger.error(err.stack);
-        res.customResponse = handlerResponse(err);
+      .catch((err) => {
+        logger.error(JSON.stringify(err));
+        if (err.statusCode === undefined) {
+          res.customResponse = { statusCode: 500, message: 'Unexpected Error' };
+        } else {
+          res.customResponse = { statusCode: err.statusCode, message: err.message };
+        }
         next();
       });
   };
@@ -109,9 +117,13 @@ class TravelController {
         res.customResponse = { statusCode: 204 };
         next();
       })
-      .catch(err => {
-        logger.error(err.stack);
-        res.customResponse = handlerResponse(err);
+      .catch((err) => {
+        logger.error(JSON.stringify(err));
+        if (err.statusCode === undefined) {
+          res.customResponse = { statusCode: 500, message: 'Unexpected Error' };
+        } else {
+          res.customResponse = { statusCode: err.statusCode, message: err.message };
+        }
         next();
       });
   };
@@ -125,9 +137,13 @@ class TravelController {
         res.customResponse = { statusCode: 204 };
         next();
       })
-      .catch(err => {
-        logger.error(err.stack);
-        res.customResponse = handlerResponse(err);
+      .catch((err) => {
+        logger.error(JSON.stringify(err));
+        if (err.statusCode === undefined) {
+          res.customResponse = { statusCode: 500, message: 'Unexpected Error' };
+        } else {
+          res.customResponse = { statusCode: err.statusCode, message: err.message };
+        }
         next();
       });
   };

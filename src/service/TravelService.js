@@ -1,6 +1,7 @@
 const TravelRepository = require('../repository/TravelRepository');
 const { CurrentPositionIsRequired } = require('../utils/errors');
 const { SERCHING_DRIVER, WAITING_DRIVER, STARTED, FINISHED, CANCELLED } = require('../utils/statesTravel');
+const { InvalidTypeTravelForMethod } = require('../utils/errors');
 class TravelService {
 
   parseInputCoordinates(coord) {
@@ -111,21 +112,42 @@ class TravelService {
     return TravelRepository.patchTravel(travelId, body);
   }
 
-  acceptTravel(travelId, body) {
+  async acceptTravel(travelId, body) {
+    const travel = await TravelRepository.findTravel(travelId);
+    if (travel.status != SERCHING_DRIVER){
+      throw new InvalidTypeTravelForMethod('Para aceptar un viaje, este debe estar en estado SEARCHING DRIVER');
+    }
     const status = WAITING_DRIVER;
     return TravelRepository.patchTravel(travelId, { status });
   }
 
-  rejectTravel(travelId, body, isRejectedByTravel) {
+  async rejectTravel(travelId, body, isRejectedByTravel) {
+    const travel = await TravelRepository.findTravel(travelId);
+    if (travel.status != SERCHING_DRIVER && !isRejectedByTravel){
+      if (travel.status != WAITING_DRIVER){
+        throw new InvalidTypeTravelForMethod('Para iniciar un viaje, este debe estar en estado SEARCHING DRIVER o WAITING');
+      }
+      throw new InvalidTypeTravelForMethod('Se debe cancelar el viaje mediante isRejectedByTravel variable');
+    }
+    
     const status = isRejectedByTravel === true ? CANCELLED : WAITING_DRIVER;
     return TravelRepository.patchTravel(travelId, { status, driverId: null, currentDriverPosition: null });
   }
 
-  startTravel(travelId, body) {
+  async startTravel(travelId, body) {
+    const travel = await TravelRepository.findTravel(travelId);
+    if (travel.status != WAITING_DRIVER){
+      console.log(travel);
+      throw new InvalidTypeTravelForMethod('Para iniciar un viaje, este debe estar en estado WAITING DRIVER');
+    }
     const status = STARTED;
     return TravelRepository.patchTravel(travelId, { status });
   }
-  finishTravel(travelId, body) {
+  async finishTravel(travelId, body) {
+    const travel = await TravelRepository.findTravel(travelId);
+    if (travel.status != STARTED){
+      throw new InvalidTypeTravelForMethod('Para iniciar un viaje, este debe estar en estado STARTED');
+    }
     const status = FINISHED;
     return TravelRepository.patchTravel(travelId, { status });
   }
