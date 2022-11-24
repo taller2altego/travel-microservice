@@ -80,8 +80,8 @@ class TravelService {
     return TravelRepository.patchTravel(travelId, { driverScore });
   }
 
-  setStateTravelByTravelId(travelId, body) {
-    if (!body.currentDriverPosition) {
+  setStateTravelByTravelId(travelId, body, setting) {
+    if (!body.currentDriverPosition && setting) {
       throw new CurrentPositionIsRequired();
     }
     return TravelRepository.patchTravel(travelId, body);
@@ -120,7 +120,7 @@ class TravelService {
       throw new InvalidTypeTravelForMethod('Para aceptar un viaje, este debe estar en estado SEARCHING DRIVER');
     }
     const status = WAITING_DRIVER;
-    return this.setStateTravelByTravelId(travelId, { status, driverId: body.driverId, currentDriverPosition: body.currentDriverPosition });
+    return this.setStateTravelByTravelId(travelId, { status, driverId: body.driverId, currentDriverPosition: body.currentDriverPosition }, true);
   }
 
   async rejectTravel(travelId, body) {
@@ -130,7 +130,7 @@ class TravelService {
  
     }
     const status = CANCELLED ;
-    return this.setStateTravelByTravelId(travelId, { status, driverId: null, currentDriverPosition: null });
+    return this.setStateTravelByTravelId(travelId, { status, driverId: null, currentDriverPosition: null }, false);
   }
 
   async startTravel(travelId, body) {
@@ -140,7 +140,7 @@ class TravelService {
       throw new InvalidTypeTravelForMethod('Para iniciar un viaje, este debe estar en estado WAITING DRIVER');
     }
     const status = STARTED;
-    return this.setStateTravelByTravelId(travelId, { status });
+    return this.setStateTravelByTravelId(travelId, { status }, false);
   }
   async finishTravel(travelId, body) {
     const travel = await TravelRepository.findTravel(travelId);
@@ -148,7 +148,7 @@ class TravelService {
       throw new InvalidTypeTravelForMethod('Para iniciar un viaje, este debe estar en estado STARTED');
     }
     const status = FINISHED;
-    return this.setStateTravelByTravelId(travelId, { status });
+    return this.setStateTravelByTravelId(travelId, { status }, false);
   }
 
   checkDriverConfirmation(travelId) {
