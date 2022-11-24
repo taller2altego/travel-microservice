@@ -80,10 +80,11 @@ class TravelService {
     return TravelRepository.patchTravel(travelId, { driverScore });
   }
 
-  setStateTravelByTravelId(travelId, status) {
-    console.log(travelId);
-    console.log(status);
-    return TravelRepository.patchTravel(travelId, status);
+  setStateTravelByTravelId(travelId, body) {
+    if (!body.currentDriverPosition) {
+      throw new CurrentPositionIsRequired();
+    }
+    return TravelRepository.patchTravel(travelId, body);
   }
 
   setDriverByTravelId(travelId, driverId, currentDriverPosition) {
@@ -119,8 +120,7 @@ class TravelService {
       throw new InvalidTypeTravelForMethod('Para aceptar un viaje, este debe estar en estado SEARCHING DRIVER');
     }
     const status = WAITING_DRIVER;
-    await this.setDriverByTravelId(travelId, body.driverId);
-    return await this.setStateTravelByTravelId(travelId, { status });
+    return this.setStateTravelByTravelId(travelId, { status, driverId: body.driverId, currentDriverPosition: body.currentDriverPosition });
   }
 
   async rejectTravel(travelId, body) {
