@@ -73,7 +73,7 @@ class TravelController {
       .acceptTravel(travelId, req.body)
       .then(travel => {
         const data = travel;
-        res.customResponse = { statusCode: 204 };
+        res.customResponse = { statusCode: 200, message: 'Travel accepted' };
         next();
       })
       .catch((err) => {
@@ -94,7 +94,7 @@ class TravelController {
       .rejectTravel(travelId, req.body, isRejectedByTravel)
       .then(travel => {
         const data = travel;
-        res.customResponse = { statusCode: 204 };
+        res.customResponse = { statusCode: 200, message: 'Travel rejected' };
         next();
       })
       .catch((err) => {
@@ -114,7 +114,7 @@ class TravelController {
       .startTravel(travelId, req.body)
       .then(travel => {
         const data = travel;
-        res.customResponse = { statusCode: 204 };
+        res.customResponse = { statusCode: 200, message: 'Travel started' };
         next();
       })
       .catch((err) => {
@@ -134,7 +134,7 @@ class TravelController {
       .finishTravel(travelId, req.body)
       .then(travel => {
         const data = travel;
-        res.customResponse = { statusCode: 204 };
+        res.customResponse = { statusCode: 200, message: 'Travel finished' };
         next();
       })
       .catch((err) => {

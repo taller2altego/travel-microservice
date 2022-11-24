@@ -80,10 +80,11 @@ class TravelService {
     return TravelRepository.patchTravel(travelId, { driverScore });
   }
 
-  setStateTravelByTravelId(travelId, status) {
-    console.log(travelId);
-    console.log(status);
-    return TravelRepository.patchTravel(travelId, status);
+  setStateTravelByTravelId(travelId, body) {
+    if (!body.currentDriverPosition) {
+      throw new CurrentPositionIsRequired();
+    }
+    return TravelRepository.patchTravel(travelId, body);
   }
 
   setDriverByTravelId(travelId, driverId, currentDriverPosition) {
@@ -119,19 +120,16 @@ class TravelService {
       throw new InvalidTypeTravelForMethod('Para aceptar un viaje, este debe estar en estado SEARCHING DRIVER');
     }
     const status = WAITING_DRIVER;
-    return await this.setStateTravelByTravelId(travelId, { status });
+    return this.setStateTravelByTravelId(travelId, { status, driverId: body.driverId, currentDriverPosition: body.currentDriverPosition });
   }
 
-  async rejectTravel(travelId, body, isRejectedByTravel) {
+  async rejectTravel(travelId, body) {
     const travel = await TravelRepository.findTravel(travelId);
-    if (travel.status != SERCHING_DRIVER && !isRejectedByTravel){
-      if (travel.status != WAITING_DRIVER){
-        throw new InvalidTypeTravelForMethod('Para iniciar un viaje, este debe estar en estado SEARCHING DRIVER o WAITING');
-      }
-      throw new InvalidTypeTravelForMethod('Se debe cancelar el viaje mediante isRejectedByTravel variable');
+    if (travel.status != SERCHING_DRIVER && travel.status != WAITING_DRIVER ){
+      throw new InvalidTypeTravelForMethod('Para iniciar un viaje, este debe estar en estado SEARCHING DRIVER o WAITING DRIVER');
+ 
     }
-    
-    const status = isRejectedByTravel === true ? CANCELLED : WAITING_DRIVER;
+    const status = CANCELLED ;
     return this.setStateTravelByTravelId(travelId, { status, driverId: null, currentDriverPosition: null });
   }
 
