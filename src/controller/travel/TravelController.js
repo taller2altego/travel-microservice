@@ -89,9 +89,8 @@ class TravelController {
 
   rejectTravel(req, res, next) {
     const travelId = req.params.travelId;
-    const isRejectedByTravel = req.query.isTravelCancelled === 'true';
     return TravelService
-      .rejectTravel(travelId, req.body, isRejectedByTravel)
+      .rejectTravel(travelId, req.body)
       .then(travel => {
         const data = travel;
         res.customResponse = { statusCode: 200, message: 'Travel rejected' };
