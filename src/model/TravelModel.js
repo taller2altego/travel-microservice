@@ -66,6 +66,10 @@ const TravelsSchema = new Schema({
   date: {
     type: Date,
     required: true
+  },
+  token: {
+    type: String,
+    required: true
   }
 });
 

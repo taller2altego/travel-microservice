@@ -1,3 +1,5 @@
+const axios = require('axios');
+
 const TravelRepository = require('../repository/TravelRepository');
 const { CurrentPositionIsRequired } = require('../utils/errors');
 const { SERCHING_DRIVER, WAITING_DRIVER, STARTED, FINISHED, CANCELLED } = require('../utils/statesTravel');
@@ -41,10 +43,28 @@ class TravelService {
     };
   }
 
-  findTravels(position) {
+  findTravels(position, token) {
     return TravelRepository
       .findTravels(position)
-      .then(travel => this.parseResponse(travel._doc));
+      .then(travel => this.parseResponse(travel._doc))
+      .then(async parsedTravel => {
+        console.log(token);
+        const body = {
+          to: token,
+          title: "Viaje encontrado!",
+          body: "Encontramos un viaje para vos",
+        };
+        await axios.post(
+          "https://exp.host/--/api/v2/push/send",
+          body,
+          {
+            headers: { 'Content-Type': 'application/json' }
+          })
+          .catch(err => {
+            console.log(err.response.data.errors);
+          });
+        return parsedTravel;
+      });
   }
 
   findTravel(travelId) {
@@ -113,7 +133,21 @@ class TravelService {
 
   acceptTravel(travelId, body) {
     const status = WAITING_DRIVER;
-    return TravelRepository.patchTravel(travelId, { status });
+    return TravelRepository
+      .patchTravel(travelId, { status })
+      .then(() => {
+        return TravelRepository.findTravel(travelId);
+      })
+      .then(response => {
+        const { token } = response;
+        const body = {
+          to: token,
+          data: { extraData: "Some data" },
+          title: "Viaje encontrado!",
+          body: "Encontramos un viaje para vos",
+        };
+        return post("https://exp.host/--/api/v2/push/send", body);
+      });
   }
 
   rejectTravel(travelId, body, isRejectedByTravel) {
@@ -125,6 +159,7 @@ class TravelService {
     const status = STARTED;
     return TravelRepository.patchTravel(travelId, { status });
   }
+
   finishTravel(travelId, body) {
     const status = FINISHED;
     return TravelRepository.patchTravel(travelId, { status });
