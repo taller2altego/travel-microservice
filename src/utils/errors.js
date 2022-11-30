@@ -30,4 +30,6 @@ class InvalidTypeTravelForMethod extends Error {
   }
 }
 
-module.exports = { InvalidTypeTravelForMethod, CurrentPositionIsRequired, FeeNotFound, InvalidPaymentMethod };
+module.exports = {
+  InvalidTypeTravelForMethod, CurrentPositionIsRequired, FeeNotFound, InvalidPaymentMethod
+};

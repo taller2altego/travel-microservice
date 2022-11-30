@@ -1,9 +1,11 @@
 const TravelRepository = require('../repository/TravelRepository');
 const { CurrentPositionIsRequired } = require('../utils/errors');
-const { SERCHING_DRIVER, WAITING_DRIVER, STARTED, FINISHED, CANCELLED } = require('../utils/statesTravel');
+const {
+  SERCHING_DRIVER, WAITING_DRIVER, STARTED, FINISHED, CANCELLED
+} = require('../utils/statesTravel');
 const { InvalidTypeTravelForMethod } = require('../utils/errors');
-class TravelService {
 
+class TravelService {
   parseInputCoordinates(coord) {
     return {
       type: 'Point',
@@ -22,8 +24,14 @@ class TravelService {
   parseResponse(data) {
     return {
       ...data,
-      source: { latitude: data.source.coordinates[1], longitude: data.source.coordinates[0] },
-      destination: { latitude: data.destination.coordinates[1], longitude: data.destination.coordinates[0] },
+      source: {
+        latitude: data.source.coordinates[1],
+        longitude: data.source.coordinates[0]
+      },
+      destination: {
+        latitude: data.destination.coordinates[1],
+        longitude: data.destination.coordinates[0]
+      },
       currentDriverPosition: {
         latitude: data.currentDriverPosition && data.currentDriverPosition.coordinates[1],
         longitude: data.currentDriverPosition && data.currentDriverPosition.coordinates[0]
@@ -32,7 +40,6 @@ class TravelService {
   }
 
   parseCurrentPosition(data) {
-    console.log(data);
     return {
       driverId: data.driverId,
       currentDriverPosition: {
@@ -59,7 +66,8 @@ class TravelService {
       .findTravelsByUserId(userId, query)
       .then(response => {
         if (response.data.length) {
-          response.data = response.data.map(currentResponse => this.parseResponse(currentResponse._doc));
+          response.data = response.data
+            .map(currentResponse => this.parseResponse(currentResponse._doc));
         }
         return response;
       });
@@ -103,11 +111,11 @@ class TravelService {
         throw new CurrentPositionIsRequired();
       }
       return this.setDriverByTravelId(travelId, body.driverId, body.currentDriverPosition);
-    } else if (body.currentDriverPosition) {
+    } if (body.currentDriverPosition) {
       return this.updateDriverPosition(travelId, body.currentDriverPosition);
-    } else if (body.userScore) {
+    } if (body.userScore) {
       return this.setUserScoreByTravelId(travelId, body.userScore);
-    } else if (body.driverScore) {
+    } if (body.driverScore) {
       return this.setDriverScoreByTravelId(travelId, body.driverScore);
     }
 
@@ -116,35 +124,41 @@ class TravelService {
 
   async acceptTravel(travelId, body) {
     const travel = await TravelRepository.findTravel(travelId);
-    if (travel.status != SERCHING_DRIVER){
+    if (travel.status !== SERCHING_DRIVER) {
       throw new InvalidTypeTravelForMethod('Para aceptar un viaje, este debe estar en estado SEARCHING DRIVER');
     }
     const status = WAITING_DRIVER;
-    return this.setStateTravelByTravelId(travelId, { status, driverId: body.driverId, currentDriverPosition: body.currentDriverPosition }, true);
+    const newStateTravel = {
+      status,
+      driverId: body.driverId,
+      currentDriverPosition: body.currentDriverPosition
+    };
+
+    return this.setStateTravelByTravelId(travelId, newStateTravel, true);
   }
 
-  async rejectTravel(travelId, body) {
+  async rejectTravel(travelId) {
     const travel = await TravelRepository.findTravel(travelId);
-    if (travel.status != SERCHING_DRIVER && travel.status != WAITING_DRIVER ){
+    if (travel.status !== SERCHING_DRIVER && travel.status !== WAITING_DRIVER) {
       throw new InvalidTypeTravelForMethod('Para iniciar un viaje, este debe estar en estado SEARCHING DRIVER o WAITING DRIVER');
- 
     }
-    const status = CANCELLED ;
-    return this.setStateTravelByTravelId(travelId, { status, driverId: null, currentDriverPosition: null }, false);
+    const status = CANCELLED;
+    const body = { status, driverId: null, currentDriverPosition: null };
+    return this.setStateTravelByTravelId(travelId, body, false);
   }
 
-  async startTravel(travelId, body) {
+  async startTravel(travelId) {
     const travel = await TravelRepository.findTravel(travelId);
-    if (travel.status != WAITING_DRIVER){
-      console.log(travel);
+    if (travel.status !== WAITING_DRIVER) {
       throw new InvalidTypeTravelForMethod('Para iniciar un viaje, este debe estar en estado WAITING DRIVER');
     }
     const status = STARTED;
     return this.setStateTravelByTravelId(travelId, { status }, false);
   }
-  async finishTravel(travelId, body) {
+
+  async finishTravel(travelId) {
     const travel = await TravelRepository.findTravel(travelId);
-    if (travel.status != STARTED){
+    if (travel.status !== STARTED) {
       throw new InvalidTypeTravelForMethod('Para iniciar un viaje, este debe estar en estado STARTED');
     }
     const status = FINISHED;

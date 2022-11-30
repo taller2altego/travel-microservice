@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
-const Schema = mongoose.Schema;
+
+const { Schema } = mongoose;
 const { SERCHING_DRIVER } = require('../utils/statesTravel');
 
 const pointSchema = new Schema({
@@ -26,7 +27,7 @@ const TravelsSchema = new Schema({
   },
   driverId: {
     type: Number,
-    required: false,
+    required: false
   },
   driverScore: {
     type: Number,
@@ -58,8 +59,8 @@ const TravelsSchema = new Schema({
     type: pointSchema,
     required: false
   },
-  status:{
-    type:String,
+  status: {
+    type: String,
     required: true,
     default: SERCHING_DRIVER
   },

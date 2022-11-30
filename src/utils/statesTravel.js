@@ -3,5 +3,5 @@ module.exports = {
   WAITING_DRIVER: 'waiting_driver',
   CANCELLED: 'cancelled',
   STARTED: 'started',
-  FINISHED: 'finished',
+  FINISHED: 'finished'
 };
