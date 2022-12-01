@@ -39,17 +39,16 @@ class TravelController {
     const userId = req.params.userId;
     const { page = 1, limit = 10 } = req.query;
 
-    return res.status(500).send({ message: 'unexpected error' });
-    // return TravelService.findTravelsByUserId(userId, { page: Number.parseInt(page), limit: Number.parseInt(limit) })
-    //   .then(travel => {
-    //     res.customResponse = { statusCode: 200, ...travel };
-    //     next();
-    //   })
-    //   .catch(err => {
-    //     logger.error(err.stack);
-    //     res.customResponse = handlerResponse(err);
-    //     next();
-    //   });
+    return TravelService.findTravelsByUserId(userId, { page: Number.parseInt(page), limit: Number.parseInt(limit) })
+      .then(travel => {
+        res.customResponse = { statusCode: 200, ...travel };
+        next();
+      })
+      .catch(err => {
+        logger.error(err.stack);
+        res.customResponse = handlerResponse(err);
+        next();
+      });
   }
 
   createTravel(req, res, next) {
