@@ -30,6 +30,18 @@ class InvalidTypeTravelForMethod extends Error {
   }
 }
 
+class FeeNotApplied extends Error {
+  constructor(message = 'No hay fee aplicado', code = 400) {
+    super();
+    this.message = message;
+    this.statusCode = code;
+  }
+}
+
 module.exports = {
-  InvalidTypeTravelForMethod, CurrentPositionIsRequired, FeeNotFound, InvalidPaymentMethod
+  InvalidTypeTravelForMethod,
+  CurrentPositionIsRequired,
+  FeeNotFound,
+  InvalidPaymentMethod,
+  FeeNotApplied
 };

@@ -13,6 +13,10 @@ class FeeRepository {
   }
 
   parseData(data) {
+    if (data === null) {
+      return null;
+    }
+
     const id = data._doc._id || undefined;
     const price = data._doc.price || undefined;
     const applied = data._doc.applied || undefined;

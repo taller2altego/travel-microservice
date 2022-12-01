@@ -1,5 +1,5 @@
 const FeeRepository = require('../repository/FeeRepository');
-const { FeeNotFound, InvalidPaymentMethod } = require('../utils/errors');
+const { FeeNotFound, InvalidPaymentMethod, FeeNotApplied } = require('../utils/errors');
 
 class FeeService {
   async findFees(page, limit) {
@@ -71,11 +71,23 @@ class FeeService {
   }
 
   async getPrice(query) {
+    let fee;
+
+    if (query.feeId) {
+      fee = await FeeRepository.findFeeById(query.feeId);
+      if (fee === null) {
+        throw new FeeNotFound();
+      }
+    } else {
+      fee = await FeeRepository.findAppliedFee();
+      if (fee === null) {
+        throw new FeeNotApplied();
+      }
+    }
+
     const {
       id, price, applied, ...fees
-    } = await (
-      query.feeId ? FeeRepository.findFeeById(query.feeId) : FeeRepository.findAppliedFee()
-    );
+    } = fee;
 
     const date = new Date(query.date);
     const priceByDay = this.priceByDay(price, date, fees.travelDate);
