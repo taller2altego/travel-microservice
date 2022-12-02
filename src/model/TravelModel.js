@@ -67,6 +67,10 @@ const TravelsSchema = new Schema({
   date: {
     type: Date,
     required: true
+  },
+  paidWithCredits: {
+    type: Boolean,
+    required: true
   }
 });
 
