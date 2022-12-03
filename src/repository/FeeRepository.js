@@ -13,6 +13,10 @@ class FeeRepository {
   }
 
   parseData(data) {
+    if (data === null) {
+      return null;
+    }
+
     const id = data._doc._id || undefined;
     const price = data._doc.price || undefined;
     const applied = data._doc.applied || undefined;
@@ -23,13 +27,16 @@ class FeeRepository {
         return parsedObject;
       }
       if (Array.isArray(data[keyToBeParsed])) {
-        const parsedValues = data[keyToBeParsed].map(({ _doc: { _id, ...parsedValue } }) => ({ ...parsedValue }));
+        const parsedValues = data[keyToBeParsed]
+          .map(({ _doc: { _id, ...parsedValue } }) => ({ ...parsedValue }));
+
         return { ...parsedObject, [keyToBeParsed]: parsedValues };
-      } else {
-        const { _id, ...parsedValue } = data[keyToBeParsed]._doc;
-        return { ...parsedObject, [keyToBeParsed]: parsedValue };
       }
-    }, { id, price, applied, travelDistance });
+      const { _id, ...parsedValue } = data[keyToBeParsed]._doc;
+      return { ...parsedObject, [keyToBeParsed]: parsedValue };
+    }, {
+      id, price, applied, travelDistance
+    });
   }
 
   async findFees(page, limit) {
@@ -41,7 +48,9 @@ class FeeRepository {
 
     const count = await FeeModel.count();
 
-    return { data: [...travels], limit, page, total: count };
+    return {
+      data: [...travels], limit, page, total: count
+    };
   }
 
   findFeeById(id) {

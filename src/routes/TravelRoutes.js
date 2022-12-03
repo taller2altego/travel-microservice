@@ -1,11 +1,9 @@
-const validatetravel = require('../controller/travel/TravelValidate');
+const router = require('express').Router();
+
 const TravelController = require('../controller/travel/TravelController');
 const logger = require('../../winston');
 
-const router = require('express').Router();
-
 module.exports = app => {
-
   const handlerResponse = (req, res) => {
     const { statusCode, ...otherFields } = res.customResponse;
     res.status(statusCode).send(otherFields);

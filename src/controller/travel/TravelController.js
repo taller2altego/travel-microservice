@@ -74,29 +74,36 @@ class TravelController {
       .acceptTravel(travelId, req.body)
       .then(travel => {
         const data = travel;
-        res.customResponse = { statusCode: 204 };
+        res.customResponse = { statusCode: 200, message: 'Travel accepted' };
         next();
       })
-      .catch(err => {
-        logger.error(err.stack);
-        res.customResponse = handlerResponse(err);
+      .catch((err) => {
+        logger.error(JSON.stringify(err));
+        if (err.statusCode === undefined) {
+          res.customResponse = { statusCode: 500, message: 'Unexpected Error' };
+        } else {
+          res.customResponse = { statusCode: err.statusCode, message: err.message };
+        }
         next();
       });
   };
 
   rejectTravel(req, res, next) {
     const travelId = req.params.travelId;
-    const isRejectedByTravel = req.query.isTravelCancelled === 'true';
     return TravelService
-      .rejectTravel(travelId, req.body, isRejectedByTravel)
+      .rejectTravel(travelId, req.body)
       .then(travel => {
         const data = travel;
-        res.customResponse = { statusCode: 204 };
+        res.customResponse = { statusCode: 200, message: 'Travel rejected' };
         next();
       })
-      .catch(err => {
-        logger.error(err.stack);
-        res.customResponse = handlerResponse(err);
+      .catch((err) => {
+        logger.error(JSON.stringify(err));
+        if (err.statusCode === undefined) {
+          res.customResponse = { statusCode: 500, message: 'Unexpected Error' };
+        } else {
+          res.customResponse = { statusCode: err.statusCode, message: err.message };
+        }
         next();
       });
   };
@@ -107,12 +114,16 @@ class TravelController {
       .startTravel(travelId, req.body)
       .then(travel => {
         const data = travel;
-        res.customResponse = { statusCode: 204 };
+        res.customResponse = { statusCode: 200, message: 'Travel started' };
         next();
       })
-      .catch(err => {
-        logger.error(err.stack);
-        res.customResponse = handlerResponse(err);
+      .catch((err) => {
+        logger.error(JSON.stringify(err));
+        if (err.statusCode === undefined) {
+          res.customResponse = { statusCode: 500, message: 'Unexpected Error' };
+        } else {
+          res.customResponse = { statusCode: err.statusCode, message: err.message };
+        }
         next();
       });
   };
@@ -123,12 +134,16 @@ class TravelController {
       .finishTravel(travelId, req.body)
       .then(travel => {
         const data = travel;
-        res.customResponse = { statusCode: 204 };
+        res.customResponse = { statusCode: 200, message: 'Travel finished' };
         next();
       })
-      .catch(err => {
-        logger.error(err.stack);
-        res.customResponse = handlerResponse(err);
+      .catch((err) => {
+        logger.error(JSON.stringify(err));
+        if (err.statusCode === undefined) {
+          res.customResponse = { statusCode: 500, message: 'Unexpected Error' };
+        } else {
+          res.customResponse = { statusCode: err.statusCode, message: err.message };
+        }
         next();
       });
   };

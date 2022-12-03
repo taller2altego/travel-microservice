@@ -22,4 +22,26 @@ class InvalidPaymentMethod extends Error {
   }
 }
 
-module.exports = { CurrentPositionIsRequired, FeeNotFound, InvalidPaymentMethod };
+class InvalidTypeTravelForMethod extends Error {
+  constructor(message = 'Modificacion invalida para el estado', code = 400) {
+    super();
+    this.message = message;
+    this.statusCode = code;
+  }
+}
+
+class FeeNotApplied extends Error {
+  constructor(message = 'No hay fee aplicado', code = 400) {
+    super();
+    this.message = message;
+    this.statusCode = code;
+  }
+}
+
+module.exports = {
+  InvalidTypeTravelForMethod,
+  CurrentPositionIsRequired,
+  FeeNotFound,
+  InvalidPaymentMethod,
+  FeeNotApplied
+};

@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
-const Schema = mongoose.Schema;
+
+const { Schema } = mongoose;
 
 const changePriceSchema = new Schema({
   quantity: {
@@ -82,10 +83,10 @@ const Fees = mongoose.model('fees', FeesSchema);
 module.exports = Fees;
 
 // dailyTravels: {
-  //   type: changePriceSchema,
-  //   required: true
-  // },
-  // monthlyTravels: {
-  //   type: changePriceSchema,
-  //   required: true
-  // },
+//   type: changePriceSchema,
+//   required: true
+// },
+// monthlyTravels: {
+//   type: changePriceSchema,
+//   required: true
+// },
