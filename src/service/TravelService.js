@@ -92,6 +92,7 @@ class TravelService {
     if (!body.currentDriverPosition && setting) {
       throw new CurrentPositionIsRequired();
     }
+
     return TravelRepository.patchTravel(travelId, body);
   }
 
@@ -131,10 +132,10 @@ class TravelService {
     const newStateTravel = {
       status,
       driverId: body.driverId,
-      currentDriverPosition: body.currentDriverPosition
+      currentDriverPosition: this.parseInputCoordinates(body.currentDriverPosition)
     };
 
-    return this.setStateTravelByTravelId(travelId, newStateTravel, true);
+    return TravelRepository.patchTravel(travelId, newStateTravel);
   }
 
   async rejectTravel(travelId) {
