@@ -196,6 +196,16 @@ class TravelService {
       .checkDriverConfirmation(travelId)
       .then(response => this.parseCurrentPosition(response));
   }
+
+  test(token) {
+    const tokenBody = {
+      to: token,
+      data: { extraData: 'Some data' },
+      title: 'Prueba exitosa',
+      body: 'Si no llega sos puto'
+    };
+    return axios.post('https://exp.host/--/api/v2/push/send', tokenBody);
+  }
 }
 
 module.exports = new TravelService();

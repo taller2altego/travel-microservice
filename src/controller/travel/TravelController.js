@@ -181,6 +181,19 @@ class TravelController {
       });
   }
 
+  test(req, res, next) {
+    return TravelService
+      .test(req.body.token)
+      .then(() => {
+        res.customResponse = { statusCode: 200, message: '' };
+        next();
+      })
+      .catch(() => {
+        res.customResponse = { statusCode: 500, message: 'unexpected error' };
+        next();
+      });
+  }
+
   // // Reglas:
   // // Las reglas se validarán en este orden y se considerará como válida la primera regla que matchee.
   // // Se crea un viaje a un usuario.
