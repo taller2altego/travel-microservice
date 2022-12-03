@@ -182,6 +182,7 @@ class TravelController {
   }
 
   test(req, res, next) {
+    console.log('123');
     return TravelService
       .test(req.query.token)
       .then(() => {
