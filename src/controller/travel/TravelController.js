@@ -183,7 +183,7 @@ class TravelController {
 
   test(req, res, next) {
     return TravelService
-      .test(req.body.token)
+      .test(req.query.token)
       .then(() => {
         res.customResponse = { statusCode: 200, message: '' };
         next();
