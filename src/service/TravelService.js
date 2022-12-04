@@ -65,7 +65,8 @@ class TravelService {
 
         await axios.post(url, body, headers)
           .then(response => {
-            logger.info(JSON.stringify(response, undefined, 2));
+            console.log(response);
+            // logger.info(JSON.stringify(response, undefined, 2));
           })
           .catch(err => {
             // logger.error(JSON.stringify(err, undefined, 2));
