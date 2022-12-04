@@ -68,7 +68,7 @@ class TravelService {
             logger.info(JSON.stringify(response, undefined, 2));
           })
           .catch(err => {
-            logger.error(err.response.data.errors);
+            logger.error(JSON.stringify(err, undefined, 2));
           });
 
         return parsedTravel;
