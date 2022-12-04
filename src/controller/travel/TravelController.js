@@ -189,7 +189,8 @@ class TravelController {
         res.customResponse = { statusCode: 200, message: '' };
         next();
       })
-      .catch(() => {
+      .catch(err => {
+        console.log(err);
         res.customResponse = { statusCode: 500, message: 'unexpected error' };
         next();
       });

@@ -58,13 +58,19 @@ class TravelService {
       .findTravels(position)
       .then(travel => this.parseResponse(travel._doc))
       .then(async parsedTravel => {
+        console.log('procesando travel');
         const body = { to: token, title: 'Viaje encontrado!', body: 'Encontramos un viaje para vos' };
         const headers = { headers: { 'Content-Type': 'application/json' } };
         const url = 'https://exp.host/--/api/v2/push/send';
+
         await axios.post(url, body, headers)
+          .then(response => {
+            logger.info(JSON.stringify(response, undefined, 2));
+          })
           .catch(err => {
             logger.error(err.response.data.errors);
           });
+
         return parsedTravel;
       });
   }
@@ -198,6 +204,7 @@ class TravelService {
   }
 
   test(token) {
+    console.log(token);
     const tokenBody = {
       to: token,
       data: { extraData: 'Some data' },
