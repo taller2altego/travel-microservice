@@ -7,8 +7,8 @@ const handlerResponse = require('../../utils/handlerResponse');
 class TravelController {
 
   findTravels(req, res, next) {
-    const { latitude, longitude } = req.query;
-    return TravelService.findTravels([longitude, latitude])
+    const { latitude, longitude, token } = req.query;
+    return TravelService.findTravels([longitude, latitude], token)
       .then(travel => {
         const data = travel;
         res.customResponse = { statusCode: 200, data };

@@ -16,6 +16,7 @@ module.exports = app => {
   };
 
   app.use('/', router);
+
   router.get('/travels/users/:userId', logInput, TravelController.findTravelsByUserId, handlerResponse);
   router.get('/travels', logInput, TravelController.findTravels, handlerResponse);
   router.get('/travels/:travelId', logInput, TravelController.findTravel, handlerResponse);

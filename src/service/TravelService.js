@@ -1,8 +1,11 @@
+const axios = require('axios');
+
 const TravelRepository = require('../repository/TravelRepository');
 const { CurrentPositionIsRequired } = require('../utils/errors');
 const {
   SERCHING_DRIVER, WAITING_DRIVER, STARTED, FINISHED, CANCELLED
 } = require('../utils/statesTravel');
+
 const { InvalidTypeTravelForMethod } = require('../utils/errors');
 
 class TravelService {
@@ -49,10 +52,17 @@ class TravelService {
     };
   }
 
-  findTravels(position) {
+  findTravels(position, token) {
     return TravelRepository
       .findTravels(position)
-      .then(travel => this.parseResponse(travel._doc));
+      .then(travel => this.parseResponse(travel._doc))
+      .then(async parsedTravel => {
+        const body = { to: token, title: 'Viaje encontrado!', body: 'Encontramos un viaje para vos' };
+        const headers = { headers: { 'Content-Type': 'application/json' } };
+        const url = 'https://exp.host/--/api/v2/push/send';
+        await axios.post(url, body, headers);
+        return parsedTravel;
+      });
   }
 
   findTravel(travelId) {
@@ -128,6 +138,7 @@ class TravelService {
     if (travel.status !== SERCHING_DRIVER) {
       throw new InvalidTypeTravelForMethod('Para aceptar un viaje, este debe estar en estado SEARCHING DRIVER');
     }
+
     const status = WAITING_DRIVER;
     const newStateTravel = {
       status,
@@ -135,7 +146,17 @@ class TravelService {
       currentDriverPosition: this.parseInputCoordinates(body.currentDriverPosition)
     };
 
-    return TravelRepository.patchTravel(travelId, newStateTravel);
+    return this.setStateTravelByTravelId(travelId, newStateTravel, true)
+      .then(() => TravelRepository.findTravel(travelId))
+      .then(response => {
+        const { token } = response;
+        const tokenBody = {
+          to: token,
+          title: 'Chofer encontrado!',
+          body: 'Encontramos un chofer para vos'
+        };
+        return axios.post('https://exp.host/--/api/v2/push/send', tokenBody);
+      });
   }
 
   async rejectTravel(travelId) {

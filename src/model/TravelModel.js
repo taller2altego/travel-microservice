@@ -68,6 +68,9 @@ const TravelsSchema = new Schema({
     type: Date,
     required: true
   },
+  token: {
+    type: String
+  },
   paidWithCredits: {
     type: Boolean,
     required: true
