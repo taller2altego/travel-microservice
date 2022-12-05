@@ -8,7 +8,6 @@ class TravelController {
 
   findTravels(req, res, next) {
     const { latitude, longitude, token } = req.query;
-    console.log(`token ${token}`);
     return TravelService.findTravels([longitude, latitude], token)
       .then(travel => {
         const data = travel;
