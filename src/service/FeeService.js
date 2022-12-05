@@ -52,6 +52,7 @@ class FeeService {
     if (distance * durationFee.quantity > duration) {
       return price + price * durationFee.percentageToChange;
     }
+
     return price;
   }
 
@@ -89,10 +90,14 @@ class FeeService {
       id, price, applied, ...fees
     } = fee;
 
+    console.log(`Precio base: ${price}`);
     const date = new Date(query.date);
     const priceByDay = this.priceByDay(price, date, fees.travelDate);
+    console.log(`Precio por día: ${priceByDay}`);
     const priceByHour = this.priceByHour(priceByDay, date, fees.travelHour);
+    console.log(`Precio por hora: ${priceByHour}`);
     const distancePrice = this.priceByDistance(priceByHour, query.distance, fees.travelDistance);
+    console.log(`Precio por distancia: ${distancePrice}`);
 
     const durationPrice = this.priceByDuration(
       distancePrice,
@@ -100,6 +105,8 @@ class FeeService {
       query.duration,
       fees.travelDuration
     );
+
+    console.log(`Precio por duracion: ${durationPrice}`);
 
     const paymentMethodPrice = this.priceByPayment(
       durationPrice,
@@ -112,6 +119,8 @@ class FeeService {
       Number(query.seniority),
       fees.seniority
     );
+
+    console.log(`Precio por seniority: ${seniorityPrice}`);
 
     return { price: seniorityPrice };
   }
