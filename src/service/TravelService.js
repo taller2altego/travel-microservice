@@ -1,5 +1,4 @@
 const axios = require('axios');
-const logger = require('../../winston');
 
 const TravelRepository = require('../repository/TravelRepository');
 const { CurrentPositionIsRequired } = require('../utils/errors');
@@ -58,21 +57,10 @@ class TravelService {
       .findTravels(position)
       .then(travel => this.parseResponse(travel._doc))
       .then(async parsedTravel => {
-        console.log('procesando travel');
         const body = { to: token, title: 'Viaje encontrado!', body: 'Encontramos un viaje para vos' };
         const headers = { headers: { 'Content-Type': 'application/json' } };
         const url = 'https://exp.host/--/api/v2/push/send';
-
-        await axios.post(url, body, headers)
-          .then(response => {
-            console.log(response);
-            // logger.info(JSON.stringify(response, undefined, 2));
-          })
-          .catch(err => {
-            // logger.error(JSON.stringify(err, undefined, 2));
-            console.log(err);
-          });
-
+        await axios.post(url, body, headers);
         return parsedTravel;
       });
   }
@@ -163,9 +151,8 @@ class TravelService {
         const { token } = response;
         const tokenBody = {
           to: token,
-          data: { extraData: 'Some data' },
-          title: 'Viaje encontrado!',
-          body: 'Encontramos un viaje para vos'
+          title: 'Chofer encontrado!',
+          body: 'Encontramos un chofer para vos'
         };
         return axios.post('https://exp.host/--/api/v2/push/send', tokenBody);
       });
@@ -203,17 +190,6 @@ class TravelService {
     return TravelRepository
       .checkDriverConfirmation(travelId)
       .then(response => this.parseCurrentPosition(response));
-  }
-
-  test(token) {
-    console.log(token);
-    const tokenBody = {
-      to: token,
-      data: { extraData: 'Some data' },
-      title: 'Prueba exitosa',
-      body: 'Si no llega sos puto'
-    };
-    return axios.post('https://exp.host/--/api/v2/push/send', tokenBody);
   }
 }
 
