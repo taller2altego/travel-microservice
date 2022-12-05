@@ -1,6 +1,8 @@
+/* eslint-disable no-undef */
 // Testing
 const chai = require('chai');
 const chaiAsPromised = require('chai-as-promised');
+
 chai.use(chaiAsPromised);
 const { expect } = chai;
 const sandbox = require('sinon');
@@ -12,7 +14,6 @@ const TravelModel = require('../../../src/model/TravelModel');
 const TravelRepository = require('../../../src/repository/TravelRepository');
 
 describe('TravelRepository Test Suite', () => {
-
   afterEach(sandbox.restore);
 
   describe('findTravels', () => {
@@ -139,6 +140,29 @@ describe('TravelRepository Test Suite', () => {
         .resolves({});
 
       const result = await TravelRepository.patchTravel(1, { random: true });
+
+      expect(result).to.deep.equal({});
+      sandbox.verify();
+    });
+  });
+
+  describe('createTravel', () => {
+    let mockTicket;
+
+    beforeEach(() => {
+      mockTicket = sandbox.mock(TravelModel.prototype);
+    });
+
+    afterEach(() => sandbox.restore());
+
+    it('Should call travel models as expected', async () => {
+      mockTicket
+        .expects('save')
+        .once()
+        .withArgs()
+        .resolves({});
+
+      const result = await TravelRepository.createTravel({ random: true });
 
       expect(result).to.deep.equal({});
       sandbox.verify();

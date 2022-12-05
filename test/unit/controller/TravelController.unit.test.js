@@ -1,18 +1,19 @@
+/* eslint-disable no-undef */
 // Testing
 const chai = require('chai');
 const chaiAsPromised = require('chai-as-promised');
+
 chai.use(chaiAsPromised);
 const { expect } = chai;
 const sandbox = require('sinon');
 
 // controller
-const TravelController = require('../../../src/controller/TravelController');
+const TravelController = require('../../../src/controller/travel/TravelController');
 
 // Service
 const TravelService = require('../../../src/service/TravelService');
 
 describe('TravelController Test Suite', () => {
-
   afterEach(sandbox.restore);
 
   describe('findTravels', () => {
@@ -27,13 +28,13 @@ describe('TravelController Test Suite', () => {
       mockNext = sandbox.spy();
     });
 
-    afterEach(() => sandbox.restore());
+    afterEach(sandbox.restore());
 
     it('Should find travels as expected', async () => {
       mockTravel
         .expects('findTravels')
         .once()
-        .withArgs([1, 2])
+        .withArgs([2, 1])
         .resolves({ id: 1 });
 
       const req = { query: { latitude: 1, longitude: 2 } };
@@ -47,12 +48,12 @@ describe('TravelController Test Suite', () => {
       mockTravel
         .expects('findTravels')
         .once()
-        .withArgs([1, 2])
+        .withArgs()
         .rejects();
 
       const req = { query: { latitude: 1, longitude: 2 } };
       await TravelController.findTravels(req, objTest, mockNext);
-      expect(objTest.customResponse).to.deep.equal({ message: "Unexpected Error", statusCode: 500 });
+      expect(objTest.customResponse).to.deep.equal({ statusCode: 500, message: 'Unexpected Error' });
       expect(mockNext.calledOnce).to.equal(true);
       sandbox.verify();
     });
@@ -138,7 +139,7 @@ describe('TravelController Test Suite', () => {
 
       const req = { params: { userId: 1 }, query: { page: 1, limit: 10 } };
       await TravelController.findTravelsByUserId(req, objTest, mockNext);
-      expect(objTest.customResponse).to.deep.equal({ message: "Unexpected Error", statusCode: 500 });
+      expect(objTest.customResponse).to.deep.equal({ message: 'Unexpected Error', statusCode: 500 });
       expect(mockNext.calledOnce).to.equal(true);
       sandbox.verify();
     });
