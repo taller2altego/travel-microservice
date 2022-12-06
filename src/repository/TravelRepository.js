@@ -3,7 +3,9 @@ const TravelModel = require('../model/TravelModel');
 class TravelRepository {
   findTravels(position) {
     const source = { $near: { $geometry: { type: 'Point', coordinates: position } } };
-    return TravelModel.findOne({ source });
+    return TravelModel.findOne({ source })
+      .where('status')
+      .equals('searching_driver');
   }
 
   findTravel(travelId) {
