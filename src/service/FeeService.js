@@ -1,3 +1,5 @@
+const moment = require('moment');
+
 const FeeRepository = require('../repository/FeeRepository');
 const { FeeNotFound, InvalidPaymentMethod, FeeNotApplied } = require('../utils/errors');
 
@@ -26,9 +28,16 @@ class FeeService {
     return FeeRepository.patchFee(feeId, body);
   }
 
+  /**
+   *
+   * @param {*} price
+   * @param {*} date
+   * @param {*} travelDate
+   * @returns
+   */
   priceByDay(price, date, travelDate) {
-    const dayOfWeekName = date.toLocaleString('default', { weekday: 'long' });
-    const matchDay = travelDate.filter(({ day }) => day === dayOfWeekName)[0];
+    const selectedDay = moment(date).utcOffset(0).days();
+    const matchDay = travelDate.filter(({ day }) => day === selectedDay)[0];
     if (matchDay !== undefined) {
       return price + matchDay.extraFee;
     }
@@ -36,8 +45,9 @@ class FeeService {
   }
 
   priceByHour(price, date, travelHours) {
-    const currentHour = date.getHours();
+    const currentHour = moment(date).utcOffset(0).hours();
     const matchHour = travelHours.filter(({ hour }) => hour === currentHour)[0];
+
     if (matchHour !== undefined) {
       return price + matchHour.extraFee;
     }
@@ -56,19 +66,20 @@ class FeeService {
     return price;
   }
 
-  priceByPayment(price, paymentMethod, paymentsFee) {
+  async priceByPayment(price, paymentMethod, paymentsFee) {
     const selectedPayment = paymentsFee
       .filter(({ paymentType }) => paymentType === paymentMethod)[0];
 
     if (selectedPayment === undefined) {
       throw new InvalidPaymentMethod();
     }
+
     return price + price * selectedPayment.percentageToChange;
   }
 
   priceBySeniority(price, seniority, seniorityFee) {
-    const selectedPayment = seniorityFee.filter(({ quantity }) => quantity < seniority)[0];
-    return selectedPayment ? price + price * selectedPayment.percentageToChange : price;
+    const selectedSeniority = seniorityFee.filter(({ quantity }) => quantity < seniority)[0];
+    return selectedSeniority ? price + price * selectedSeniority.percentageToChange : price;
   }
 
   async getPrice(query) {
@@ -90,7 +101,7 @@ class FeeService {
       id, price, applied, ...fees
     } = fee;
 
-    const date = new Date(query.date);
+    const { date } = query;
     const priceByDay = this.priceByDay(price, date, fees.travelDate);
     const priceByHour = this.priceByHour(priceByDay, date, fees.travelHour);
     const distancePrice = this.priceByDistance(priceByHour, query.distance, fees.travelDistance);
