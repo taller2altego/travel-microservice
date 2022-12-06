@@ -26,7 +26,7 @@ const paymentSchema = new Schema({
 
 const changePriceByDay = new Schema({
   day: {
-    type: String,
+    type: Number,
     required: true
   },
   extraFee: {
@@ -37,7 +37,7 @@ const changePriceByDay = new Schema({
 
 const changePriceByHour = new Schema({
   hour: {
-    type: String,
+    type: Number,
     required: true
   },
   extraFee: {

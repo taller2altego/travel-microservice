@@ -12,6 +12,7 @@ const TravelRepository = require('../../../src/repository/TravelRepository');
 
 // services
 const TravelService = require('../../../src/service/TravelService');
+const { STARTED, WAITING_DRIVER, SEARCHING_DRIVER } = require('../../../src/utils/statesTravel');
 
 describe('TravelService Unit Tests', () => {
   describe('findTravels', () => {
@@ -313,7 +314,8 @@ describe('TravelService Unit Tests', () => {
           driverId: 1,
           currentDriverPosition: {
             coordinates: [2, 1]
-          }
+          },
+          status: STARTED
         });
 
       const travel = await TravelService.checkDriverConfirmation(10);
@@ -322,26 +324,13 @@ describe('TravelService Unit Tests', () => {
         currentDriverPosition: {
           latitude: 1,
           longitude: 2
-        }
+        },
+        isFinished: false,
+        isStarted: true
       });
     });
   });
   describe('Accept travel should change the state of travel', () => {
-    const body = {
-      driverId: 1,
-      currentDriverPosition: {
-        latitude: 100,
-        longitude: 100
-      }
-    };
-    const expectedArgs = {
-
-      status: 'waiting_driver',
-      driverId: 1,
-      currentDriverPosition: {
-        type: 'Point', coordinates: [100, 100]
-      }
-    };
     let travelRepository;
 
     beforeEach(() => {
@@ -353,6 +342,14 @@ describe('TravelService Unit Tests', () => {
     });
 
     it('Should accept travel as expected', async () => {
+
+      const body = { driverId: 1, currentDriverPosition: { latitude: 100, longitude: 100 } };
+      const expectedArgs = {
+        status: WAITING_DRIVER,
+        driverId: 1,
+        currentDriverPosition: { type: 'Point', coordinates: [100, 100] }
+      };
+
       travelRepository
         .expects('patchTravel')
         .once()
@@ -363,11 +360,11 @@ describe('TravelService Unit Tests', () => {
         .once()
         .withArgs('10')
         .resolves({
-          status: 'searching_driver'
+          status: SEARCHING_DRIVER
         });
 
       const travel = await TravelService.acceptTravel('10', body);
-      expect(travel).to.deep.equal({});
+      expect(travel).to.deep.equal({ ok: true });
       sandbox.verify();
     });
     it('Should fail accept', async () => {
@@ -560,7 +557,7 @@ describe('TravelService Unit Tests', () => {
         .resolves({});
 
       const travel = await TravelService.setUserScoreByTravelId(10, 10);
-      expect(travel).to.deep.equal({ });
+      expect(travel).to.deep.equal({});
     });
   });
   describe('Set Driver Score by Travel Id should patch as expected', () => {
@@ -582,7 +579,7 @@ describe('TravelService Unit Tests', () => {
         .resolves({});
 
       const travel = await TravelService.setDriverScoreByTravelId(10, 10);
-      expect(travel).to.deep.equal({ });
+      expect(travel).to.deep.equal({});
     });
   });
   describe('Set Driver Score by Travel Id should patch as expected', () => {
@@ -604,7 +601,7 @@ describe('TravelService Unit Tests', () => {
         .resolves({});
 
       const travel = await TravelService.setStateTravelByTravelId(10, { state: 'waiting_driver' }, false);
-      expect(travel).to.deep.equal({ });
+      expect(travel).to.deep.equal({});
     });
   });
 });

@@ -13,7 +13,7 @@ const FeeRepository = require('../../../src/repository/FeeRepository');
 // services
 const FeeService = require('../../../src/service/FeeService');
 
-describe.only('FeeService Unit Tests', () => {
+describe('FeeService Unit Tests', () => {
   describe('findFees', () => {
     let feeRepository;
 
@@ -247,8 +247,8 @@ describe.only('FeeService Unit Tests', () => {
           travelHour: [{ hour: 23, extraFee: 0.00001 }],
           travelDistance: 0.0001,
           travelDuration: { quantity: 10, percentageToChange: 0.00001 },
-          methodOfPayment: [{ paymentType: 'ETH', percentageToChange: 0.002 }],
-          seniority: [{ quantity: 5, percentageToChange: 0.002 }]
+          methodOfPayment: [{ paymentType: 'ETH', percentageToChange: 0.00001 }],
+          seniority: [{ quantity: 5, percentageToChange: 0.00001 }]
         });
 
       const date = '2022-12-05T23:01:59.708Z';
@@ -260,7 +260,7 @@ describe.only('FeeService Unit Tests', () => {
       const body = { date, distance, duration, paymentMethod, seniority };
 
       const price = await FeeService.getPrice(body);
-      expect(price.price).to.equal(0.0015330753306000001);
+      expect(price.price).to.equal(0.0015300306001530001);
     });
   });
 });

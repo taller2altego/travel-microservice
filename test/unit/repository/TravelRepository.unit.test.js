@@ -12,6 +12,7 @@ const TravelModel = require('../../../src/model/TravelModel');
 
 // Service under test
 const TravelRepository = require('../../../src/repository/TravelRepository');
+const { SEARCHING_DRIVER } = require('../../../src/utils/statesTravel');
 
 describe('TravelRepository Test Suite', () => {
   afterEach(sandbox.restore);
@@ -26,11 +27,27 @@ describe('TravelRepository Test Suite', () => {
     afterEach(() => sandbox.restore());
 
     it('Should find travels as expected', async () => {
+      const equalsObj = { equals: () => { } };
+      const mockEquals = sandbox.mock(equalsObj);
+
+      const whereObj = { where: () => { } };
+      const mockWhere = sandbox.mock(whereObj);
+
+      mockEquals
+        .expects('equals')
+        .withArgs(SEARCHING_DRIVER)
+        .resolves({ _id: 1 });
+
+      mockWhere
+        .expects('where')
+        .withArgs('status')
+        .returns(equalsObj);
+
       mockTicket
         .expects('findOne')
         .once()
-        .withArgs()
-        .resolves({ _id: 1 });
+        .withArgs({ source: { $near: { $geometry: { type: 'Point', coordinates: 1 } } } })
+        .returns(whereObj);
 
       const result = await TravelRepository.findTravels(1);
 
@@ -188,7 +205,7 @@ describe('TravelRepository Test Suite', () => {
       mockEquals
         .expects('equals')
         .withArgs(1)
-        .resolves([{ _id: 1, driverId: 5, currentDriverPosition: [1, 2] }]);
+        .resolves([{ _id: 1, driverId: 5, currentDriverPosition: [1, 2], status: 'ok' }]);
 
       mockWhere
         .expects('where')
@@ -203,7 +220,7 @@ describe('TravelRepository Test Suite', () => {
 
       const result = await TravelRepository.checkDriverConfirmation(1);
 
-      expect(result).to.deep.equal({ driverId: 5, currentDriverPosition: [1, 2] });
+      expect(result).to.deep.equal({ driverId: 5, currentDriverPosition: [1, 2], status: 'ok' });
       sandbox.verify();
     });
   });

@@ -11,6 +11,18 @@ const FeeModel = require('../../../src/model/FeeModel');
 
 // Service under test
 const FeeRepository = require('../../../src/repository/FeeRepository');
+
+const feeToBeCreated = {
+  price: 0.00001,
+  timeWindow: [{ quantity: 5, percentageToChange: 0.01 }],
+  seniority: [{ quantity: 5, percentageToChange: 0.01 }],
+  methodOfPayment: [{ paymentType: 'ETH', percentageToChange: 0.01 }],
+  travelDuration: [{ quantity: 5, percentageToChange: 0.01 }],
+  travelDistance: 2,
+  travelDate: [{ day: 2, extraFee: 0.01 }],
+  travelHour: [{ hour: 10, extraFee: 0.01 }]
+};
+
 const expectedFee = {
   _doc: {
     _id: '63892f091937f4604936e8a1',
@@ -88,7 +100,7 @@ const resultFee = {
   travelHour: [{ hour: '10', extraFee: 0.01 }]
 };
 
-describe.only('FeeRepository Test Suite', () => {
+describe('FeeRepository Test Suite', () => {
   afterEach(sandbox.restore);
 
   describe('findFeeById', () => {
@@ -192,7 +204,7 @@ describe.only('FeeRepository Test Suite', () => {
         .withArgs()
         .resolves(expectedFee);
 
-      const result = await FeeRepository.createFee({ random: true });
+      const result = await FeeRepository.createFee({ ...feeToBeCreated });
 
       expect(result).to.deep.equal(resultFee);
       sandbox.verify();
