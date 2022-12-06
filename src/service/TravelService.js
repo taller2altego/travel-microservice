@@ -55,8 +55,11 @@ class TravelService {
   findTravels(position, token) {
     return TravelRepository
       .findTravels(position)
-      .then(travel => this.parseResponse(travel._doc))
+      .then(travel => (travel ? this.parseResponse(travel._doc) : null))
       .then(async parsedTravel => {
+        if (parsedTravel === null) {
+          return parsedTravel;
+        }
         const body = { to: token, title: 'Viaje encontrado!', body: 'Encontramos un viaje para vos' };
         const headers = { headers: { 'Content-Type': 'application/json' } };
         const url = 'https://exp.host/--/api/v2/push/send';
