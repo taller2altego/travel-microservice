@@ -13,7 +13,7 @@ const FeeRepository = require('../../../src/repository/FeeRepository');
 // services
 const FeeService = require('../../../src/service/FeeService');
 
-describe('FeeService Unit Tests', () => {
+describe.only('FeeService Unit Tests', () => {
   describe('findFees', () => {
     let feeRepository;
 
@@ -27,7 +27,7 @@ describe('FeeService Unit Tests', () => {
 
     it('Should call find fees as expected', async () => {
       feeRepository
-        .expects('findfees')
+        .expects('findFees')
         .once()
         .withArgs(1, 2)
         .resolves({});
@@ -114,7 +114,7 @@ describe('FeeService Unit Tests', () => {
         .withArgs({ prop: 1 })
         .resolves({ result: true });
 
-      const travel = await FeeService.createFee({ prop: 1 });
+      const travel = await FeeService.patchFee({ prop: 1 });
       expect(travel).to.deep.equal({ result: true });
     });
   });
@@ -173,11 +173,11 @@ describe('FeeService Unit Tests', () => {
     });
 
     it('Should not match payment and change the price', async () => {
-      await FeeService.priceByPayment(0.00001, 'ETH', [{ paymentType: 'BTC', percentageToChange: 0.002 }])
-        .then(() => { throw new Error(); })
-        .catch(err => {
-          expect(err.message).to.equal('Invalid payment method');
-        });
+      try {
+        FeeService.priceByPayment(0.00001, 'ETH', [{ paymentType: 'BTC', percentageToChange: 0.002 }]);
+      } catch (err) {
+        expect(err.message).to.equal('Invalid payment method');
+      };
     });
   });
 
@@ -227,7 +227,7 @@ describe('FeeService Unit Tests', () => {
         .resolves(null);
 
       await FeeService
-        .getPrice()
+        .getPrice({})
         .then(() => { throw new Error(); })
         .catch(err => {
           expect(err.message).to.equal('No hay fee aplicado');
@@ -243,16 +243,24 @@ describe('FeeService Unit Tests', () => {
           id: '123',
           price: 0.00001,
           applied: true,
-          travelDate: {},
-          travelHour: {},
-          travelDistance: {},
-          travelDuration: {},
-          methodOfPayment: {},
-          seniority: {}
+          travelDate: [{ day: 1, extraFee: 0.00001 }],
+          travelHour: [{ hour: 23, extraFee: 0.00001 }],
+          travelDistance: 0.0001,
+          travelDuration: { quantity: 10, percentageToChange: 0.00001 },
+          methodOfPayment: [{ paymentType: 'ETH', percentageToChange: 0.002 }],
+          seniority: [{ quantity: 5, percentageToChange: 0.002 }]
         });
 
-      const price = await FeeService.getPrice();
-      expect(price).to.equal(0);
+      const date = '2022-12-05T23:01:59.708Z';
+      const distance = 15;
+      const duration = 30;
+      const paymentMethod = 'ETH';
+      const seniority = 5;
+
+      const body = { date, distance, duration, paymentMethod, seniority };
+
+      const price = await FeeService.getPrice(body);
+      expect(price.price).to.equal(0.0015330753306000001);
     });
   });
 });

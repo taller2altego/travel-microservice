@@ -66,7 +66,7 @@ class FeeService {
     return price;
   }
 
-  async priceByPayment(price, paymentMethod, paymentsFee) {
+  priceByPayment(price, paymentMethod, paymentsFee) {
     const selectedPayment = paymentsFee
       .filter(({ paymentType }) => paymentType === paymentMethod)[0];
 
