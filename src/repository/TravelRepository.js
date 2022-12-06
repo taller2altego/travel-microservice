@@ -50,7 +50,8 @@ class TravelRepository {
       .equals(travelId)
       .then(response => ({
         driverId: response[0].driverId,
-        currentDriverPosition: response[0].currentDriverPosition
+        currentDriverPosition: response[0].currentDriverPosition,
+        status: response[0].status
       }));
   }
 }
