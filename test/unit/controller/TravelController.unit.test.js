@@ -28,7 +28,7 @@ describe('TravelController Test Suite', () => {
       mockNext = sandbox.spy();
     });
 
-    afterEach(sandbox.restore());
+    afterEach(() => sandbox.restore());
 
     it('Should find travels as expected', async () => {
       mockTravel

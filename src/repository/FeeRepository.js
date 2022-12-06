@@ -22,21 +22,26 @@ class FeeRepository {
     const applied = data._doc.applied || undefined;
     const travelDistance = data._doc.travelDistance || undefined;
 
-    return this.keysToParse.reduce((parsedObject, keyToBeParsed) => {
-      if (data[keyToBeParsed] === undefined) {
-        return parsedObject;
-      }
-      if (Array.isArray(data[keyToBeParsed])) {
-        const parsedValues = data[keyToBeParsed]
-          .map(({ _doc: { _id, ...parsedValue } }) => ({ ...parsedValue }));
+    return this.keysToParse.reduce(
+      (parsedObject, keyToBeParsed) => {
+        if (data[keyToBeParsed] === undefined) {
+          return parsedObject;
+        }
 
-        return { ...parsedObject, [keyToBeParsed]: parsedValues };
+        if (Array.isArray(data[keyToBeParsed])) {
+          const parsedValues = data[keyToBeParsed]
+            .map(({ _doc: { _id, ...parsedValue } }) => ({ ...parsedValue }));
+
+          return { ...parsedObject, [keyToBeParsed]: parsedValues };
+        }
+
+        const { _id, ...parsedValue } = data[keyToBeParsed]._doc;
+        return { ...parsedObject, [keyToBeParsed]: parsedValue };
+      },
+      {
+        id, price, applied, travelDistance
       }
-      const { _id, ...parsedValue } = data[keyToBeParsed]._doc;
-      return { ...parsedObject, [keyToBeParsed]: parsedValue };
-    }, {
-      id, price, applied, travelDistance
-    });
+    );
   }
 
   async findFees(page, limit) {

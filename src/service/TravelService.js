@@ -3,7 +3,7 @@ const axios = require('axios');
 const TravelRepository = require('../repository/TravelRepository');
 const { CurrentPositionIsRequired } = require('../utils/errors');
 const {
-  SERCHING_DRIVER, WAITING_DRIVER, STARTED, FINISHED, CANCELLED
+  SEARCHING_DRIVER, WAITING_DRIVER, STARTED, FINISHED, CANCELLED
 } = require('../utils/statesTravel');
 
 const { InvalidTypeTravelForMethod } = require('../utils/errors');
@@ -65,7 +65,7 @@ class TravelService {
         const body = { to: token, title: 'Viaje encontrado!', body: 'Encontramos un viaje para vos' };
         const headers = { headers: { 'Content-Type': 'application/json' } };
         const url = 'https://exp.host/--/api/v2/push/send';
-        await axios.post(url, body, headers);
+        await axios.post(url, body, headers).catch(() => { });
         return parsedTravel;
       });
   }
@@ -89,7 +89,7 @@ class TravelService {
   }
 
   createTravel(body) {
-    const finalBody = this.parseInput({ ...body, status: SERCHING_DRIVER });
+    const finalBody = this.parseInput({ ...body, status: SEARCHING_DRIVER });
     return TravelRepository
       .createTravel(finalBody)
       .then(res => this.parseResponse(res._doc));
@@ -140,7 +140,7 @@ class TravelService {
 
   async acceptTravel(travelId, body) {
     const travel = await TravelRepository.findTravel(travelId);
-    if (travel.status !== SERCHING_DRIVER) {
+    if (travel.status !== SEARCHING_DRIVER) {
       throw new InvalidTypeTravelForMethod('Para aceptar un viaje, este debe estar en estado SEARCHING DRIVER');
     }
 
@@ -152,21 +152,20 @@ class TravelService {
     };
 
     return this.setStateTravelByTravelId(travelId, newStateTravel, true)
-      .then(() => TravelRepository.findTravel(travelId))
-      .then(response => {
-        const { token } = response;
+      .then(() => {
+        const { token } = travel;
         const tokenBody = {
           to: token,
           title: 'Chofer encontrado!',
           body: 'Encontramos un chofer para vos'
         };
-        return axios.post('https://exp.host/--/api/v2/push/send', tokenBody);
+        return axios.post('https://exp.host/--/api/v2/push/send', tokenBody).catch(() => ({ ok: true }));
       });
   }
 
   async rejectTravel(travelId) {
     const travel = await TravelRepository.findTravel(travelId);
-    if (travel.status !== SERCHING_DRIVER && travel.status !== WAITING_DRIVER) {
+    if (travel.status !== SEARCHING_DRIVER && travel.status !== WAITING_DRIVER) {
       throw new InvalidTypeTravelForMethod('Para iniciar un viaje, este debe estar en estado SEARCHING DRIVER o WAITING DRIVER');
     }
     const status = CANCELLED;

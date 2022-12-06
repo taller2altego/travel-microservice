@@ -1,11 +1,13 @@
 const TravelModel = require('../model/TravelModel');
+const { SEARCHING_DRIVER } = require('../utils/statesTravel');
 
 class TravelRepository {
   findTravels(position) {
     const source = { $near: { $geometry: { type: 'Point', coordinates: position } } };
-    return TravelModel.findOne({ source })
+    return TravelModel
+      .findOne({ source })
       .where('status')
-      .equals('searching_driver');
+      .equals(SEARCHING_DRIVER);
   }
 
   findTravel(travelId) {
