@@ -1,0 +1,14 @@
+name: Fiuber Travel Microservice CI
+on: push
+jobs:
+  check-linter:
+    runs-on: ubuntu-latest
+    name: Check Linter and Format
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: "16"
+
+      - run: npm ci
+      - run: npm run lint
