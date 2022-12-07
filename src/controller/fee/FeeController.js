@@ -63,7 +63,7 @@ class FeeController {
   getPrice(req, res, next) {
     return FeeService.getPrice(req.query)
       .then(price => {
-        res.customResponse = { statusCode: 200, data: { price: 0.00001 } };
+        res.customResponse = { statusCode: 200, data: { price } };
         next();
       })
       .catch(err => {
