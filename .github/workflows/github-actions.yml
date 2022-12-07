@@ -25,7 +25,9 @@ jobs:
       - run: npm ci
       - run: npm run test
   
-  coverage: 
+  coverage:
+    runs-on: ubuntu-latest
+    name: Run coverage 
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
