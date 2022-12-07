@@ -73,7 +73,7 @@ class TravelService {
   findTravel(travelId) {
     return TravelRepository
       .findTravel(travelId)
-      .then(travel => this.parseResponse(travel._doc));
+      .then(travel => (travel ? this.parseResponse(travel._doc) : {}));
   }
 
   findTravelsByUserId(userId, query) {
