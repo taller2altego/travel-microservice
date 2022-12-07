@@ -42,6 +42,6 @@ jobs:
         run: npm run report-coverage
         
       - name: Upload coverage
-        uses: codecov/codevoc-action@v3
+        uses: codecov/codecov-action@v3
         with:
           files: ./coverage.lcov
