@@ -1,11 +1,13 @@
 const TravelModel = require('../model/TravelModel');
+const { SEARCHING_DRIVER } = require('../utils/statesTravel');
 
 class TravelRepository {
-  constructor() { }
-
   findTravels(position) {
     const source = { $near: { $geometry: { type: 'Point', coordinates: position } } };
-    return TravelModel.findOne({ source });
+    return TravelModel
+      .findOne({ source })
+      .where('status')
+      .equals(SEARCHING_DRIVER);
   }
 
   findTravel(travelId) {
@@ -29,7 +31,9 @@ class TravelRepository {
       .where('userId')
       .equals(userId);
 
-    return { data: [...travels], limit, page, total: count };
+    return {
+      data: [...travels], limit, page, total: count
+    };
   }
 
   createTravel(body) {
@@ -46,9 +50,11 @@ class TravelRepository {
       .find()
       .where('_id')
       .equals(travelId)
-      .then(response => {
-        return { driverId: response[0].driverId, currentDriverPosition: response[0].currentDriverPosition };
-      });
+      .then(response => ({
+        driverId: response[0].driverId,
+        currentDriverPosition: response[0].currentDriverPosition,
+        status: response[0].status
+      }));
   }
 }
 

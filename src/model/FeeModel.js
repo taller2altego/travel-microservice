@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
-const Schema = mongoose.Schema;
+
+const { Schema } = mongoose;
 
 const changePriceSchema = new Schema({
   quantity: {
@@ -25,7 +26,7 @@ const paymentSchema = new Schema({
 
 const changePriceByDay = new Schema({
   day: {
-    type: String,
+    type: Number,
     required: true
   },
   extraFee: {
@@ -36,7 +37,7 @@ const changePriceByDay = new Schema({
 
 const changePriceByHour = new Schema({
   hour: {
-    type: String,
+    type: Number,
     required: true
   },
   extraFee: {
@@ -65,10 +66,10 @@ const FeesSchema = new Schema({
   methodOfPayment: [
     { type: paymentSchema, required: true }
   ],
-  travelDuration: {
+  travelDuration: [{
     type: changePriceSchema,
     required: true
-  },
+  }],
   travelDistance: {
     type: Number,
     required: true
@@ -82,10 +83,10 @@ const Fees = mongoose.model('fees', FeesSchema);
 module.exports = Fees;
 
 // dailyTravels: {
-  //   type: changePriceSchema,
-  //   required: true
-  // },
-  // monthlyTravels: {
-  //   type: changePriceSchema,
-  //   required: true
-  // },
+//   type: changePriceSchema,
+//   required: true
+// },
+// monthlyTravels: {
+//   type: changePriceSchema,
+//   required: true
+// },

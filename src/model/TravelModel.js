@@ -1,5 +1,7 @@
 const mongoose = require('mongoose');
-const Schema = mongoose.Schema;
+
+const { Schema } = mongoose;
+const { SEARCHING_DRIVER } = require('../utils/statesTravel');
 
 const pointSchema = new Schema({
   type: {
@@ -25,7 +27,7 @@ const TravelsSchema = new Schema({
   },
   driverId: {
     type: Number,
-    required: false,
+    required: false
   },
   driverScore: {
     type: Number,
@@ -57,8 +59,20 @@ const TravelsSchema = new Schema({
     type: pointSchema,
     required: false
   },
+  status: {
+    type: String,
+    required: true,
+    default: SEARCHING_DRIVER
+  },
   date: {
     type: Date,
+    required: true
+  },
+  token: {
+    type: String
+  },
+  paidWithCredits: {
+    type: Boolean,
     required: true
   }
 });
