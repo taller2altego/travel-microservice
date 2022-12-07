@@ -24,3 +24,21 @@ jobs:
 
       - run: npm ci
       - run: npm run test
+  
+  coverage: 
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: "16"
+    
+      - run: npm ci
+      - name: Run Coverage
+        run: npm run coverage
+      
+      - name: Generate Coverage Report
+        run: npm run report-coverage
+        
+      - name: Upload coverage
+        uses: codecov/codevoc-action@v3
+          files: ./coverage.lcov

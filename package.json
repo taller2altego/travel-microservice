@@ -15,6 +15,7 @@
     "docker-up": "docker-compose up --build -d",
     "test": "./node_modules/.bin/mocha ./test/unit/**/*.unit.test.js",
     "coverage": "nyc npm run test",
+    "report_coverage": "nyc report --reporter=text-lcov > coverage.lcov",
     "prepare": "husky install",
     "lint": "npx eslint ./src/**/**.js",
     "lint:fix": "npx eslint ./src/**/**.js --fix"
