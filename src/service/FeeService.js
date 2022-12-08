@@ -53,6 +53,11 @@ class FeeService {
   }
 
   percentageByDuration(distance, duration, durationFee) {
+    logger.info(distance);
+    logger.info(duration);
+    logger.info(durationFee.quantity);
+    logger.info(durationFee.percentageToChange);
+
     if (distance * durationFee.quantity > duration) {
       return duration * durationFee.percentageToChange;
     }
