@@ -122,59 +122,59 @@ describe('FeeService Unit Tests', () => {
   describe('priceByDay', () => {
     it('Should match a day and change the price', async () => {
       const date = '2022-12-05T01:01:59.708Z';
-      const price = await FeeService.priceByDay(0.00001, date, [{ day: 1, extraFee: 0.002 }]);
-      expect(price).to.deep.equal(0.00201);
+      const price = await FeeService.incrementByDay(date, [{ day: 1, extraFee: 0.002 }]);
+      expect(price).to.deep.equal(0.002);
     });
 
     it('Should not match a day and change the price', async () => {
       const date = '2022-12-05T01:01:59.708Z';
-      const price = await FeeService.priceByDay(0.00001, date, [{ day: 2, extraFee: 0.002 }]);
-      expect(price).to.deep.equal(0.00001);
+      const price = await FeeService.incrementByDay(date, [{ day: 2, extraFee: 0.002 }]);
+      expect(price).to.deep.equal(0);
     });
   });
 
   describe('priceByHour', () => {
     it('Should match an hour and change the price', async () => {
-      const date = '2022-12-05T23:01:59.708Z';
-      const price = await FeeService.priceByHour(0.00001, date, [{ hour: 23, extraFee: 0.002 }]);
-      expect(price).to.deep.equal(0.00201);
+      const date = new Date('2022-12-05T23:01:59.708Z').toISOString();
+      const price = await FeeService.incrementByHour(date, [{ hour: 20, extraFee: 0.002 }]);
+      expect(price).to.deep.equal(0.002);
     });
 
     it('Should match a hour and change the price', async () => {
       const date = '2022-12-05T01:01:59.708Z';
-      const price = await FeeService.priceByHour(0.00001, date, [{ hour: 2, extraFee: 0.002 }]);
-      expect(price).to.deep.equal(0.00001);
+      const price = await FeeService.incrementByHour(date, [{ hour: 2, extraFee: 0.002 }]);
+      expect(price).to.deep.equal(0);
     });
   });
 
   describe('priceByDistance', () => {
     it('Should change the price', async () => {
-      const price = await FeeService.priceByDistance(0.00001, 30, 0.00001);
-      expect(price).to.deep.equal(0.00031000000000000005);
+      const price = await FeeService.percentageByDistance(10, 0.00001);
+      expect(price).to.deep.equal(0.0001);
     });
   });
 
   describe('priceByDuration', () => {
     it('Should match duration and change the price', async () => {
-      const price = await FeeService.priceByDuration(0.00001, 30, 20, { quantity: 10, percentageToChange: 0.002 });
-      expect(price).to.deep.equal(0.00001002);
+      const price = await FeeService.percentageByDuration(30, 1000, { quantity: 10, percentageToChange: 0.002 });
+      expect(price).to.deep.equal(2);
     });
 
     it('Should match a hour and change the price', async () => {
-      const price = await FeeService.priceByDuration(0.00001, 10, 180, { quantity: 10, percentageToChange: 0.002 });
-      expect(price).to.deep.equal(0.00001);
+      const price = await FeeService.percentageByDuration(10, 1, { quantity: 10, percentageToChange: 0.002 });
+      expect(price).to.deep.equal(0);
     });
   });
 
   describe('priceByPayment', () => {
     it('Should match payment and change the price', async () => {
-      const price = await FeeService.priceByPayment(0.00001, 'ETH', [{ paymentType: 'ETH', percentageToChange: 0.002 }]);
-      expect(price).to.deep.equal(0.00001002);
+      const price = await FeeService.percentageByPayment('ETH', [{ paymentType: 'ETH', percentageToChange: 0.002 }]);
+      expect(price).to.deep.equal(0.002);
     });
 
     it('Should not match payment and change the price', async () => {
       try {
-        FeeService.priceByPayment(0.00001, 'ETH', [{ paymentType: 'BTC', percentageToChange: 0.002 }]);
+        FeeService.percentageByPayment('ETH', [{ paymentType: 'BTC', percentageToChange: 0.002 }]);
       } catch (err) {
         expect(err.message).to.equal('Invalid payment method');
       };
@@ -183,13 +183,13 @@ describe('FeeService Unit Tests', () => {
 
   describe('priceBySeniority', () => {
     it('Should match seniority and change the price', async () => {
-      const price = await FeeService.priceBySeniority(0.00001, 10, [{ quantity: 5, percentageToChange: 0.002 }]);
-      expect(price).to.deep.equal(0.00001002);
+      const price = await FeeService.percentageBySeniority(10, [{ quantity: 5, percentageToChange: 0.002 }]);
+      expect(price).to.deep.equal(0.002);
     });
 
     it('Should not match seniority and change the price', async () => {
-      const price = await FeeService.priceBySeniority(0.00001, 10, [{ quantity: 15, percentageToChange: 0.002 }]);
-      expect(price).to.equal(0.00001);
+      const price = await FeeService.percentageBySeniority(10, [{ quantity: 15, percentageToChange: 0.002 }]);
+      expect(price).to.equal(0);
     });
   });
 
@@ -260,7 +260,7 @@ describe('FeeService Unit Tests', () => {
       const body = { date, distance, duration, paymentMethod, seniority };
 
       const price = await FeeService.getPrice(body);
-      expect(price.price).to.equal(0.0015300306001530001);
+      expect(price.price).to.equal(0.0000100151);
     });
   });
 });
