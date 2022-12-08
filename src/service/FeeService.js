@@ -99,7 +99,7 @@ class FeeService {
 
     const { date } = query;
     const { distance, duration, paymentMethod } = query;
-    const { travelDuration, travelDistance, methodOfPaymentFee } = fees;
+    const { travelDuration, travelDistance, methodOfPayment } = fees;
 
     const distancePercentage = this.percentageByDistance(distance, travelDistance);
     logger.info(`Porcentaje por distancia: ${distancePercentage}`);
@@ -107,7 +107,7 @@ class FeeService {
     const durationPercentage = this.percentageByDuration(distance, duration, travelDuration);
     logger.info(`Porcentaje por duration: ${durationPercentage}`);
 
-    const paymentMethodPercentage = this.percentageByPayment(paymentMethod, methodOfPaymentFee);
+    const paymentMethodPercentage = this.percentageByPayment(paymentMethod, methodOfPayment);
     logger.info(`Porcentaje por payments: ${paymentMethodPercentage}`);
 
     const seniorityPercentage = this.percentageBySeniority(Number(query.seniority), fees.seniority);
