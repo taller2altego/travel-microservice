@@ -6,7 +6,6 @@ class FeeRepository {
       'timeWindow',
       'seniority',
       'methodOfPayment',
-      'travelDuration',
       'travelDate',
       'travelHour'
     ];
@@ -21,6 +20,7 @@ class FeeRepository {
     const price = data._doc.price || undefined;
     const applied = data._doc.applied || undefined;
     const travelDistance = data._doc.travelDistance || undefined;
+    const travelDuration = data._doc.travelDuration || undefined;
 
     return this.keysToParse.reduce(
       (parsedObject, keyToBeParsed) => {
@@ -39,7 +39,7 @@ class FeeRepository {
         return { ...parsedObject, [keyToBeParsed]: parsedValue };
       },
       {
-        id, price, applied, travelDistance
+        id, price, applied, travelDistance, travelDuration
       }
     );
   }

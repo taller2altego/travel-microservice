@@ -66,10 +66,10 @@ const FeesSchema = new Schema({
   methodOfPayment: [
     { type: paymentSchema, required: true }
   ],
-  travelDuration: [{
-    type: changePriceSchema,
+  travelDuration: {
+    type: Number,
     required: true
-  }],
+  },
   travelDistance: {
     type: Number,
     required: true
