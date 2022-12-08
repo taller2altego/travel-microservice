@@ -44,7 +44,9 @@ class FeeService {
 
   incrementByHour(date, travelHours) {
     const currentHour = moment(date).utcOffset(0).hours();
+    logger.info(currentHour);
     const matchHour = travelHours.filter(({ hour }) => hour === currentHour)[0];
+    logger.info(JSON.stringify(matchHour, undefined, 2));
     return matchHour !== undefined ? matchHour.extraFee : 0;
   }
 
