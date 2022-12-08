@@ -1,5 +1,5 @@
 const TravelModel = require('../model/TravelModel');
-const { SEARCHING_DRIVER } = require('../utils/statesTravel');
+const { SEARCHING_DRIVER, FINISHED } = require('../utils/statesTravel');
 
 class TravelRepository {
   findTravels(position) {
@@ -24,7 +24,9 @@ class TravelRepository {
       .limit(limit * 1)
       .skip((page - 1) * limit)
       .where('userId')
-      .equals(userId);
+      .equals(userId)
+      .where('status')
+      .equals(FINISHED);
 
     const count = await TravelModel
       .count()
