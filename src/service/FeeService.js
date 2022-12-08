@@ -36,38 +36,30 @@ class FeeService {
    * @param {*} travelDate
    * @returns
    */
-  priceByDay(price, date, travelDate) {
+  incrementByDay(date, travelDate) {
     const selectedDay = moment(date).utcOffset(0).days();
     const matchDay = travelDate.filter(({ day }) => day === selectedDay)[0];
-    if (matchDay !== undefined) {
-      return price + matchDay.extraFee;
-    }
-    return price;
+    return matchDay !== undefined ? matchDay.extraFee : 0;
   }
 
-  priceByHour(price, date, travelHours) {
+  incrementByHour(date, travelHours) {
     const currentHour = moment(date).utcOffset(0).hours();
     const matchHour = travelHours.filter(({ hour }) => hour === currentHour)[0];
-
-    if (matchHour !== undefined) {
-      return price + matchHour.extraFee;
-    }
-    return price;
+    return matchHour !== undefined ? matchHour.extraFee : 0;
   }
 
-  priceByDistance(price, distance, distanceFee) {
-    return price + distance * distanceFee;
+  percentageByDistance(distance, distanceFee) {
+    return distance * distanceFee;
   }
 
-  priceByDuration(price, distance, duration, durationFee) {
+  percentageByDuration(distance, duration, durationFee) {
     if (distance * durationFee.quantity > duration) {
-      return price + price * durationFee.percentageToChange;
+      return duration * durationFee.percentageToChange;
     }
-
-    return price;
+    return 0;
   }
 
-  priceByPayment(price, paymentMethod, paymentsFee) {
+  percentageByPayment(paymentMethod, paymentsFee) {
     const selectedPayment = paymentsFee
       .filter(({ paymentType }) => paymentType === paymentMethod)[0];
 
@@ -75,12 +67,12 @@ class FeeService {
       throw new InvalidPaymentMethod();
     }
 
-    return price + price * selectedPayment.percentageToChange;
+    return selectedPayment.percentageToChange;
   }
 
-  priceBySeniority(price, seniority, seniorityFee) {
+  percentageBySeniority(seniority, seniorityFee) {
     const selectedSeniority = seniorityFee.filter(({ quantity }) => quantity < seniority)[0];
-    return selectedSeniority ? price + price * selectedSeniority.percentageToChange : price;
+    return selectedSeniority ? selectedSeniority.percentageToChange : 0;
   }
 
   async getPrice(query) {
@@ -106,37 +98,39 @@ class FeeService {
     logger.info(`query: ${JSON.stringify(query, undefined, 2)}`);
 
     const { date } = query;
-    const priceByDay = this.priceByDay(price, date, fees.travelDate);
-    logger.info(`Precio por dia: ${priceByDay}`);
-    const priceByHour = this.priceByHour(priceByDay, date, fees.travelHour);
-    logger.info(`Precio por hora: ${priceByHour}`);
-    const distancePrice = this.priceByDistance(priceByHour, query.distance, fees.travelDistance);
-    logger.info(`Precio por distancia: ${distancePrice}`);
-    const durationPrice = this.priceByDuration(
-      distancePrice,
-      query.distance,
-      query.duration,
-      fees.travelDuration
-    );
-    logger.info(`Precio por duration: ${durationPrice}`);
+    const { distance, duration, paymentMethod } = query;
+    const { travelDuration, travelDistance, methodOfPaymentFee } = fees.travelDuration;
 
-    const paymentMethodPrice = this.priceByPayment(
-      durationPrice,
-      query.paymentMethod,
-      fees.methodOfPayment
-    );
+    const distancePercentage = this.percentageByDistance(distance, travelDistance);
+    logger.info(`Porcentaje por distancia: ${distancePercentage}`);
 
-    logger.info(`Precio por payments: ${paymentMethodPrice}`);
+    const durationPercentage = this.percentageByDuration(distance, duration, travelDuration);
+    logger.info(`Porcentaje por duration: ${durationPercentage}`);
 
-    const seniorityPrice = this.priceBySeniority(
-      paymentMethodPrice,
-      Number(query.seniority),
-      fees.seniority
-    );
+    const paymentMethodPercentage = this.percentageByPayment(paymentMethod, methodOfPaymentFee);
+    logger.info(`Porcentaje por payments: ${paymentMethodPercentage}`);
 
-    logger.info(`Precio por seniority: ${seniorityPrice}`);
+    const seniorityPercentage = this.percentageBySeniority(Number(query.seniority), fees.seniority);
+    logger.info(`Porcentaje por seniority: ${seniorityPercentage}`);
 
-    return { price: seniorityPrice };
+    const totalPercentage = [
+      distancePercentage,
+      durationPercentage,
+      paymentMethodPercentage,
+      seniorityPercentage
+    ].reduce((acum, current) => acum + current);
+    logger.info(`Porcentaje total: ${totalPercentage}`);
+
+    const totalModifiedPriceByPercentage = price * totalPercentage;
+    logger.info(`Precio total aplicado porcentaje: ${totalPercentage}`);
+
+    const incrementByDay = this.incrementByDay(date, fees.travelDate);
+    logger.info(`Incremento por dia: ${incrementByDay}`);
+
+    const incrementByHour = this.incrementByHour(date, fees.travelHour);
+    logger.info(`Incremento por dia: ${incrementByHour}`);
+
+    return { price: totalModifiedPriceByPercentage + incrementByDay + incrementByHour };
   }
 }
 
