@@ -1,4 +1,5 @@
 const moment = require('moment');
+const logger = require('../../winston');
 
 const FeeRepository = require('../repository/FeeRepository');
 const { FeeNotFound, InvalidPaymentMethod, FeeNotApplied } = require('../utils/errors');
@@ -101,17 +102,23 @@ class FeeService {
       id, price, applied, ...fees
     } = fee;
 
+    logger.info(`reglas: ${JSON.stringify(fees, undefined, 2)}`);
+    logger.info(`query: ${JSON.stringify(query, undefined, 2)}`);
+
     const { date } = query;
     const priceByDay = this.priceByDay(price, date, fees.travelDate);
+    logger.info(`Precio por dia: ${priceByDay}`);
     const priceByHour = this.priceByHour(priceByDay, date, fees.travelHour);
+    logger.info(`Precio por hora: ${priceByHour}`);
     const distancePrice = this.priceByDistance(priceByHour, query.distance, fees.travelDistance);
-
+    logger.info(`Precio por distancia: ${distancePrice}`);
     const durationPrice = this.priceByDuration(
       distancePrice,
       query.distance,
       query.duration,
       fees.travelDuration
     );
+    logger.info(`Precio por duration: ${durationPrice}`);
 
     const paymentMethodPrice = this.priceByPayment(
       durationPrice,
@@ -119,11 +126,15 @@ class FeeService {
       fees.methodOfPayment
     );
 
+    logger.info(`Precio por payments: ${paymentMethodPrice}`);
+
     const seniorityPrice = this.priceBySeniority(
       paymentMethodPrice,
       Number(query.seniority),
       fees.seniority
     );
+
+    logger.info(`Precio por seniority: ${seniorityPrice}`);
 
     return { price: seniorityPrice };
   }
