@@ -53,7 +53,7 @@ class FeeService {
   }
 
   percentageByDuration(distance, duration, durationFee) {
-    if (distance * durationFee.quantity > duration) {
+    if (distance * durationFee.quantity < duration) {
       return duration * durationFee.percentageToChange;
     }
     return 0;
