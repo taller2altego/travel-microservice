@@ -47,6 +47,7 @@ class TravelService {
       driverId: data.driverId,
       isStarted: data.status === STARTED,
       isFinished: data.status === FINISHED,
+      isCancelled: data.status === CANCELLED,
       currentDriverPosition: {
         latitude: data.currentDriverPosition && data.currentDriverPosition.coordinates[1],
         longitude: data.currentDriverPosition && data.currentDriverPosition.coordinates[0]
