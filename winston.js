@@ -10,7 +10,7 @@ const myFormat = printf(({ level, message, timestamp, ...metadata }) => {
   return msg
 });
 
-const level = process.env.NODE_ENV === 'production' ? 'error' : 'debug';
+const level = process.env.LOG_LEVEL || 'debug';
 const ownFormat = combine(format.colorize(), splat(), timestamp(), myFormat);
 const logger = createLogger({ level, format: ownFormat, transports: [new transports.Console({ level })] });
 

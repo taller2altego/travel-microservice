@@ -5,8 +5,8 @@ class FeeRepository {
     this.keysToParse = [
       'timeWindow',
       'seniority',
-      'methodOfPayment',
       'travelDuration',
+      'methodOfPayment',
       'travelDate',
       'travelHour'
     ];
@@ -22,31 +22,28 @@ class FeeRepository {
     const applied = data._doc.applied || undefined;
     const travelDistance = data._doc.travelDistance || undefined;
 
-    return this.keysToParse.reduce(
-      (parsedObject, keyToBeParsed) => {
-        if (data[keyToBeParsed] === undefined) {
-          return parsedObject;
-        }
-
-        if (Array.isArray(data[keyToBeParsed])) {
-          const parsedValues = data[keyToBeParsed]
-            .map(({ _doc: { _id, ...parsedValue } }) => ({ ...parsedValue }));
-
-          return { ...parsedObject, [keyToBeParsed]: parsedValues };
-        }
-
-        const { _id, ...parsedValue } = data[keyToBeParsed]._doc;
-        return { ...parsedObject, [keyToBeParsed]: parsedValue };
-      },
-      {
-        id, price, applied, travelDistance
+    return this.keysToParse.reduce((parsedObject, keyToBeParsed) => {
+      if (data[keyToBeParsed] === undefined) {
+        return parsedObject;
       }
-    );
+
+      if (Array.isArray(data[keyToBeParsed])) {
+        const parsedValues = data[keyToBeParsed]
+          .map(({ _doc: { _id, ...parsedValue } }) => ({ ...parsedValue }));
+
+        return { ...parsedObject, [keyToBeParsed]: parsedValues };
+      }
+
+      const { _id, ...parsedValue } = data[keyToBeParsed]._doc;
+      return { ...parsedObject, [keyToBeParsed]: parsedValue };
+    }, {
+      id, price, applied, travelDistance
+    });
   }
 
   async findFees(page, limit) {
     const travels = await FeeModel
-      .find()
+      .find(null, null, { sort: { _id: -1 } })
       .limit(limit * 1)
       .skip((page - 1) * limit)
       .then(rows => rows.map(row => this.parseData(row)));
