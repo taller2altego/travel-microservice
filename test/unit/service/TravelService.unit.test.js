@@ -325,6 +325,7 @@ describe('TravelService Unit Tests', () => {
           latitude: 1,
           longitude: 2
         },
+        isCancelled: false,
         isFinished: false,
         isStarted: true
       });

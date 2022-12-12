@@ -12,7 +12,7 @@ const TravelModel = require('../../../src/model/TravelModel');
 
 // Service under test
 const TravelRepository = require('../../../src/repository/TravelRepository');
-const { SEARCHING_DRIVER } = require('../../../src/utils/statesTravel');
+const { SEARCHING_DRIVER, FINISHED } = require('../../../src/utils/statesTravel');
 
 describe('TravelRepository Test Suite', () => {
   afterEach(sandbox.restore);
@@ -109,15 +109,21 @@ describe('TravelRepository Test Suite', () => {
 
       // find tests
       const firstEqualsObj = { equals: () => { } };
+      const secondEqualsObj = { equals: () => { } };
       const mockFirstEquals = sandbox.mock(firstEqualsObj);
+      const mockSecondEquals = sandbox.mock(secondEqualsObj);
       const firstWhereObj = { where: () => { } };
+      const secondWhereObj = { where: () => { } };
       const mockFirstWhere = sandbox.mock(firstWhereObj);
+      const mockSecondWhere = sandbox.mock(secondWhereObj);
       const skipObj = { skip: () => { } };
       const mockSkip = sandbox.mock(skipObj);
       const limitObj = { limit: () => { } };
       const mockLimit = sandbox.mock(limitObj);
 
-      mockFirstEquals.expects('equals').withArgs(1).resolves([{ _id: 1 }]);
+      mockSecondEquals.expects('equals').withArgs(FINISHED).resolves([{ _id: 1 }]);
+      mockSecondWhere.expects('where').withArgs('status').returns(secondEqualsObj);
+      mockFirstEquals.expects('equals').withArgs(1).returns(secondWhereObj);
       mockFirstWhere.expects('where').withArgs('userId').returns(firstEqualsObj);
       mockSkip.expects('skip').withArgs(0).returns(firstWhereObj);
       mockLimit.expects('limit').withArgs(1).returns(skipObj);
